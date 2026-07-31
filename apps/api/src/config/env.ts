@@ -1,14 +1,16 @@
 import dotenv from 'dotenv';
 import {z} from 'zod';
+import path from "node:path";
 
-dotenv.config();
-
+dotenv.config({
+  path: path.resolve(process.cwd(), ".env"),
+});
 
 const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     HOST: z.string().default('localhost'),
     PORT: z.coerce.number().default(3000),
-    API_PREFIX: z.string().default('/api'),
+    API_PREFIX: z.string().default('/api/v1'),
     LOG_LEVEL: z.enum([
     "fatal",
     "error",
