@@ -51,12 +51,12 @@ reviewforge/
 
 Applications that can be started independently.
 
-| Folder | Purpose |
-|---------|---------|
-| `api` | Hono backend (REST APIs, GitHub webhooks, authentication) |
-| `web` | Next.js frontend dashboard |
-| `worker` | Background jobs (AI reviews, processing) |
-| `sandbox` | Safe execution of untrusted code |
+| Folder    | Purpose                                                   |
+| --------- | --------------------------------------------------------- |
+| `api`     | Hono backend (REST APIs, GitHub webhooks, authentication) |
+| `web`     | Next.js frontend dashboard                                |
+| `worker`  | Background jobs (AI reviews, processing)                  |
+| `sandbox` | Safe execution of untrusted code                          |
 
 ---
 
@@ -64,24 +64,24 @@ Applications that can be started independently.
 
 Reusable code shared across applications.
 
-| Folder | Purpose |
-|---------|---------|
-| `ai` | AI providers, prompts, structured outputs |
-| `auth` | Authentication & authorization |
-| `cache` | Redis wrapper |
-| `config` | Environment variables & configuration |
-| `database` | Drizzle ORM, schemas & migrations |
-| `github` | GitHub API wrapper |
-| `logger` | Shared logging |
-| `observability` | Metrics, tracing & monitoring |
-| `queue` | BullMQ wrapper |
-| `review-engine` | Core AI review logic |
-| `security` | Encryption, webhook verification, rate limiting |
-| `shared` | Common utilities & helpers |
-| `storage` | File storage abstraction |
-| `types` | Shared TypeScript types |
-| `ui` | Shared React components |
-| `validators` | Shared Zod validation schemas |
+| Folder          | Purpose                                         |
+| --------------- | ----------------------------------------------- |
+| `ai`            | AI providers, prompts, structured outputs       |
+| `auth`          | Authentication & authorization                  |
+| `cache`         | Redis wrapper                                   |
+| `config`        | Environment variables & configuration           |
+| `database`      | Drizzle ORM, schemas & migrations               |
+| `github`        | GitHub API wrapper                              |
+| `logger`        | Shared logging                                  |
+| `observability` | Metrics, tracing & monitoring                   |
+| `queue`         | BullMQ wrapper                                  |
+| `review-engine` | Core AI review logic                            |
+| `security`      | Encryption, webhook verification, rate limiting |
+| `shared`        | Common utilities & helpers                      |
+| `storage`       | File storage abstraction                        |
+| `types`         | Shared TypeScript types                         |
+| `ui`            | Shared React components                         |
+| `validators`    | Shared Zod validation schemas                   |
 
 ---
 
@@ -89,12 +89,12 @@ Reusable code shared across applications.
 
 Deployment and DevOps configuration.
 
-| Folder | Purpose |
-|---------|---------|
-| `docker` | Dockerfiles & Docker Compose |
-| `kubernetes` | Kubernetes manifests |
+| Folder       | Purpose                         |
+| ------------ | ------------------------------- |
+| `docker`     | Dockerfiles & Docker Compose    |
+| `kubernetes` | Kubernetes manifests            |
 | `monitoring` | Prometheus, Grafana, Loki, etc. |
-| `terraform` | Cloud infrastructure |
+| `terraform`  | Cloud infrastructure            |
 
 ---
 

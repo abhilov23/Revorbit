@@ -9,6 +9,6 @@ export function notFoundHandler(c: Context) {
         message: "Route not found",
       },
     },
-    404
+    404,
   );
 }

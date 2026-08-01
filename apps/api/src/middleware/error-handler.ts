@@ -18,7 +18,7 @@ export const errorHandler = (err: Error, c: Context) => {
           details: err.details,
         },
       },
-      err.statusCode as any
+      err.statusCode as any,
     );
   }
 
@@ -27,7 +27,7 @@ export const errorHandler = (err: Error, c: Context) => {
       requestId,
       err,
     },
-    "Unhandled application error"
+    "Unhandled application error",
   );
 
   const internalError = new InternalServerError();
@@ -43,6 +43,6 @@ export const errorHandler = (err: Error, c: Context) => {
         }),
       },
     },
-    500
+    500,
   );
 };

@@ -10,10 +10,7 @@ export const validate = <T>(schema: ZodSchema<T>) =>
     const result = schema.safeParse(body);
 
     if (!result.success) {
-      throw new ValidationError(
-        "Validation failed",
-        result.error.flatten()
-      );
+      throw new ValidationError("Validation failed", result.error.flatten());
     }
 
     c.set("validatedBody", result.data);

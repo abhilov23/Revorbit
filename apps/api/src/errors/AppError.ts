@@ -1,12 +1,12 @@
-interface AppErrorOptions{
-    statusCode: number;
-    code: string;
-    message: string;
-    details?: unknown;
-    isOperational?: boolean;
+interface AppErrorOptions {
+  statusCode: number;
+  code: string;
+  message: string;
+  details?: unknown;
+  isOperational?: boolean;
 }
 
-export class AppError extends Error{
+export class AppError extends Error {
   public readonly statusCode: number;
   public readonly code: string;
   public readonly details?: unknown;
@@ -31,6 +31,6 @@ export class AppError extends Error{
 
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
-    } 
-}
+    }
+  }
 }

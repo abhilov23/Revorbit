@@ -1,4 +1,4 @@
 export type Variables = {
-    requestId: string;
-    validatedBody: unknown;
-}
+  requestId: string;
+  validatedBody: unknown;
+};

@@ -1,8 +1,5 @@
-
 const TestSection = () => {
-    return (
-        <div>TestSection</div>
-    )
-}
+  return <div>TestSection</div>;
+};
 
-export default TestSection
+export default TestSection;

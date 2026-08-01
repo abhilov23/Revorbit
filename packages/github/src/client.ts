@@ -1,19 +1,19 @@
-import {createAppAuth} from "@octokit/auth-app";
-import {Octokit} from "@octokit/rest";
+import { createAppAuth } from "@octokit/auth-app";
+import { Octokit } from "@octokit/rest";
 
 export interface GithubAppConfig {
-    appId: number;
-    privateKey: string;
+  appId: number;
+  privateKey: string;
 }
 
-export interface GithubClient{
-    app: Octokit;
-    
-    getInstallationClient(installationId: number): Promise<Octokit>;
+export interface GithubClient {
+  app: Octokit;
+
+  getInstallationClient(installationId: number): Promise<Octokit>;
 }
 
-export function createGithubApp(config: GithubAppConfig):GithubClient {
- const app = new Octokit({
+export function createGithubApp(config: GithubAppConfig): GithubClient {
+  const app = new Octokit({
     authStrategy: createAppAuth,
     auth: {
       appId: config.appId,
@@ -22,7 +22,7 @@ export function createGithubApp(config: GithubAppConfig):GithubClient {
   });
 
   async function getInstallationClient(
-    installationId: number
+    installationId: number,
   ): Promise<Octokit> {
     const {
       data: { token },
