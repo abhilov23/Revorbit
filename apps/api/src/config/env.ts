@@ -22,13 +22,13 @@ const envSchema = z.object({
   ]),
     CORS_ORIGIN: z.string(),
 
-    GITHUB_APP_ID: z.string(),
+    GITHUB_APP_ID: z.coerce.number(),
 
     GITHUB_CLIENT_ID: z.string(),
 
     GITHUB_CLIENT_SECRET: z.string(),
 
-    GITHUB_PRIVATE_KEY: z.string(),
+    GITHUB_PRIVATE_KEY_PATH: z.string(),
 
     GITHUB_WEBHOOK_SECRET: z.string(),
 })
