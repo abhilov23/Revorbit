@@ -219,6 +219,18 @@ importers:
         specifier: ^8.50.0
         version: 8.50.0(eslint@9.39.1(jiti@2.7.0))(typescript@5.9.2)
 
+  packages/github:
+    dependencies:
+      '@octokit/auth-app':
+        specifier: ^8.2.0
+        version: 8.2.0
+      '@octokit/rest':
+        specifier: ^22.0.1
+        version: 22.0.1
+      '@octokit/webhooks':
+        specifier: ^14.2.0
+        version: 14.2.0
+
   packages/typescript-config: {}
 
   packages/ui:
