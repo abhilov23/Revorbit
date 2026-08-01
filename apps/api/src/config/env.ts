@@ -21,6 +21,16 @@ const envSchema = z.object({
     "silent",
   ]),
     CORS_ORIGIN: z.string(),
+
+    GITHUB_APP_ID: z.string(),
+
+    GITHUB_CLIENT_ID: z.string(),
+
+    GITHUB_CLIENT_SECRET: z.string(),
+
+    GITHUB_PRIVATE_KEY: z.string(),
+
+    GITHUB_WEBHOOK_SECRET: z.string(),
 })
 
 const parsedEnv = envSchema.safeParse(process.env);
