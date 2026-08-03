@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  githubId     Int?     @unique
+  login        String?
+  name         String?
+  email        String?  @unique
+  passwordHash String?
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  installations Installation[]
+}
+
+model Installation {
+  id           String       @id @default(cuid())
+  githubId     Int          @unique
+  accountLogin String
+  accountType  String
+  userId       String?
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  repositories Repository[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Repository {
+  id             String       @id @default(cuid())
+  githubId       Int          @unique
+  owner          String
+  name           String
+  fullName       String       @unique
+  defaultBranch  String
+  settings       RepositorySettings?
+  installationId String
+  installation   Installation @relation(fields: [installationId], references: [id], onDelete: Cascade)
+  reviews        Review[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model RepositorySettings {
+  id                String     @id @default(cuid())
+  repositoryId      String     @unique
+  repository        Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  enabled           Boolean    @default(true)
+  security          Boolean    @default(true)
+  performance       Boolean    @default(true)
+  bestPractices     Boolean    @default(true)
+  model             String     @default("deepseek-ai/deepseek-coder-6.7b-instruct")
+  maxFiles          Int        @default(20)
+  maxTokens         Int        @default(4000)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+}
+
+model Review {
+  id           String          @id @default(cuid())
+  repositoryId String
+  repository   Repository      @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  pullNumber   Int
+  pullTitle    String
+  headSha      String
+  status       ReviewStatus    @default(PENDING)
+  summary      String?
+  model        String
+  comments     ReviewComment[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model ReviewComment {
+  id          String   @id @default(cuid())
+  reviewId    String
+  review      Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  filePath    String
+  line        Int
+  severity    String
+  title       String
+  body        String
+  problemCode String   @default("")
+  fixedCode   String   @default("")
+  suggestion  String?
+  createdAt   DateTime @default(now())
+}
+
+enum ReviewStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}

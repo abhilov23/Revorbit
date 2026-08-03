@@ -1,5 +1,14 @@
+export type AppErrorStatusCode =
+  | 400
+  | 401
+  | 403
+  | 404
+  | 409
+  | 422
+  | 500;
+
 interface AppErrorOptions {
-  statusCode: number;
+  statusCode: AppErrorStatusCode;
   code: string;
   message: string;
   details?: unknown;
@@ -7,7 +16,7 @@ interface AppErrorOptions {
 }
 
 export class AppError extends Error {
-  public readonly statusCode: number;
+  public readonly statusCode: AppErrorStatusCode;
   public readonly code: string;
   public readonly details?: unknown;
   public readonly isOperational: boolean;

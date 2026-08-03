@@ -9,7 +9,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@mergeguard/github": ["../../packages/github/src/index.ts"]
+      "@revorbit/github": ["../../packages/github/src/index.ts"],
+      "@revorbit/database": ["../../packages/database/src/index.ts"],
+      "@revorbit/logger": ["../../packages/logger/src/index.ts"],
+      "@revorbit/queue": ["../../packages/queue/src/index.ts"],
+      "@revorbit/shared": ["../../packages/shared/src/index.ts"],
+      "@revorbit/validators": ["../../packages/validators/src/index.ts"]
     },
     "types": ["node"],
     "jsx": "react-jsx",

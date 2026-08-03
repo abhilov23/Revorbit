@@ -18,39 +18,39 @@ export function FaqSection() {
   const items = [
     {
       icon: BotIcon,
-      title: "What is MergeGuard?",
+      title: "What is Revorbit?",
       content:
-        "MergeGuard is an AI-powered code review platform that integrates directly with GitHub. It automatically reviews every pull request for bugs, security vulnerabilities, performance issues, and code quality violations before they are merged. Think of it as an intelligent teammate that never misses a detail.",
+        "Revorbit is an AI-powered code review platform that integrates directly with GitHub. It automatically reviews every pull request for bugs, security vulnerabilities, performance issues, and code quality violations before they are merged. Think of it as an intelligent teammate that never misses a detail.",
     },
     {
       icon: GitPullRequestIcon,
-      title: "How does MergeGuard review my pull requests?",
+      title: "How does Revorbit review my pull requests?",
       content:
-        "When a pull request is opened, MergeGuard analyzes the changed files, retrieves relevant context from your codebase, and generates a comprehensive review. It publishes inline comments directly on your GitHub pull request with specific, actionable feedback — including suggested fixes where possible.",
+        "When a pull request is opened, Revorbit analyzes the changed files, retrieves relevant context from your codebase, and generates a comprehensive review. It publishes inline comments directly on your GitHub pull request with specific, actionable feedback — including suggested fixes where possible.",
     },
     {
       icon: SettingsIcon,
       title: "How long does it take to set up?",
       content:
-        "Minutes. Install the MergeGuard GitHub App, select the repositories you want to monitor, and you're done. Every new pull request in those repositories will be automatically reviewed. No configuration files, no CI pipeline changes, no complex setup.",
+        "Minutes. Install the Revorbit GitHub App, select the repositories you want to monitor, and you're done. Every new pull request in those repositories will be automatically reviewed. No configuration files, no CI pipeline changes, no complex setup.",
     },
     {
       icon: ShieldCheckIcon,
-      title: "Can MergeGuard detect security vulnerabilities?",
+      title: "Can Revorbit detect security vulnerabilities?",
       content:
-        "Yes. MergeGuard identifies secret leaks, unsafe API usage, authentication and authorization issues, vulnerable dependencies, and other security concerns. Each finding includes an explanation of the risk and a suggested fix.",
+        "Yes. Revorbit identifies secret leaks, unsafe API usage, authentication and authorization issues, vulnerable dependencies, and other security concerns. Each finding includes an explanation of the risk and a suggested fix.",
     },
     {
       icon: LockIcon,
-      title: "Is my code safe with MergeGuard?",
+      title: "Is my code safe with Revorbit?",
       content:
-        "Absolutely. Your code is encrypted in transit and at rest. MergeGuard does not store your source code — only review results and metadata. We never train on your code, and you can delete your data at any time. Enterprise-grade security is built into everything we do.",
+        "Absolutely. Your code is encrypted in transit and at rest. Revorbit does not store your source code — only review results and metadata. We never train on your code, and you can delete your data at any time. Enterprise-grade security is built into everything we do.",
     },
     {
       icon: ZapIcon,
-      title: "Does MergeGuard replace human code reviews?",
+      title: "Does Revorbit replace human code reviews?",
       content:
-        "No. MergeGuard is designed to assist human reviewers, not replace them. It handles the repetitive and time-consuming aspects of code review — catching common issues, enforcing best practices, and checking for vulnerabilities — so human reviewers can focus on architecture, design, and business logic.",
+        "No. Revorbit is designed to assist human reviewers, not replace them. It handles the repetitive and time-consuming aspects of code review — catching common issues, enforcing best practices, and checking for vulnerabilities — so human reviewers can focus on architecture, design, and business logic.",
     },
   ];
   return (
@@ -60,7 +60,7 @@ export function FaqSection() {
           Frequently Asked Questions
         </h2>
         <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
-          Everything you need to know about MergeGuard and how it can transform
+          Everything you need to know about Revorbit and how it can transform
           your code review process.
         </p>
       </div>

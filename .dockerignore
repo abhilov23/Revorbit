@@ -1,0 +1,27 @@
+# See https://docs.docker.com/build/building/context/
+
+# Dependencies
+node_modules
+.pnpm-store
+
+# Local env and secrets
+.env
+.env.local
+*.pem
+
+# Build outputs
+.next
+out
+build
+dist
+.turbo
+.dist
+
+# Git
+.git
+
+# Vercel
+.vercel
+
+# Misc
+coverage

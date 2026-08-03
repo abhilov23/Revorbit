@@ -72,7 +72,7 @@ const Hero = () => {
           className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400 max-w-3xl mx-auto"
           variants={fadeUpVariants}
         >
-          MergeGuard automatically reviews every GitHub pull request for bugs,
+          Revorbit automatically reviews every GitHub pull request for bugs,
           security vulnerabilities, performance issues, and code quality — so
           your team can merge with confidence.
         </motion.p>

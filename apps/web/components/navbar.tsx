@@ -45,7 +45,7 @@ export const Navbar = () => {
                 <Logo className="h-5 w-5 text-white" />
               </div>
               <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                MergeGuard
+                Revorbit
               </span>
             </Link>
 

@@ -1,13 +1,10 @@
 import type { Context } from "hono";
 
-export function success<T>(c: Context, data: T, status = 200) {
-  return c.json(
-    {
-      success: true,
-      data,
-    },
-    status as any,
-  );
+export function success<T>(c: Context, data: T) {
+  return c.json({
+    success: true,
+    data,
+  });
 }
 
 export function created<T>(c: Context, data: T) {

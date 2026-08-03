@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@revorbit/ai": ["../../packages/ai/src/index.ts"],
+      "@revorbit/database": ["../../packages/database/src/index.ts"],
+      "@revorbit/github": ["../../packages/github/src/index.ts"],
+      "@revorbit/logger": ["../../packages/logger/src/index.ts"],
+      "@revorbit/queue": ["../../packages/queue/src/index.ts"],
+      "@revorbit/shared": ["../../packages/shared/src/index.ts"],
+      "@revorbit/validators": ["../../packages/validators/src/index.ts"]
+    },
+    "types": ["node"]
+  },
+  "exclude": ["node_modules"]
+}

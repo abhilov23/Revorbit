@@ -7,31 +7,31 @@ const reviews = [
   {
     name: "Sarah Chen",
     username: "@sarahchen",
-    body: "MergeGuard cut our code review time in half. The AI catches issues our human reviewers would have missed, and the inline GitHub comments make it effortless to address.",
+    body: "Revorbit cut our code review time in half. The AI catches issues our human reviewers would have missed, and the inline GitHub comments make it effortless to address.",
     img: "https://notion-avatars.netlify.app/api/avatar?preset=female-1",
   },
   {
     name: "Marcus Johnson",
     username: "@marcusj",
-    body: "We've reduced production bugs by 40% since adding MergeGuard to our workflow. The security analysis alone has saved us from several critical vulnerabilities.",
+    body: "We've reduced production bugs by 40% since adding Revorbit to our workflow. The security analysis alone has saved us from several critical vulnerabilities.",
     img: "https://notion-avatars.netlify.app/api/avatar/?face=1&nose=10&mouth=8&eyes=11&eyebrows=1&glasses=14&hair=40&accessories=0&details=0&beard=0&halloween=0&christmas=0",
   },
   {
     name: "Emily Rodriguez",
     username: "@emilyrodriguez",
-    body: "Setup was incredibly simple. Within minutes, MergeGuard was reviewing our PRs and providing actionable feedback. It's become an indispensable part of our CI pipeline.",
+    body: "Setup was incredibly simple. Within minutes, Revorbit was reviewing our PRs and providing actionable feedback. It's become an indispensable part of our CI pipeline.",
     img: "https://notion-avatars.netlify.app/api/avatar/?face=13&nose=7&mouth=11&eyes=3&eyebrows=12&glasses=3&hair=40&accessories=0&details=0&beard=0&halloween=0&christmas=0",
   },
   {
     name: "David Kim",
     username: "@davidkim",
-    body: "The context-aware analysis is a game-changer. MergeGuard doesn't just review files in isolation — it understands how changes fit into our entire codebase.",
+    body: "The context-aware analysis is a game-changer. Revorbit doesn't just review files in isolation — it understands how changes fit into our entire codebase.",
     img: "https://notion-avatars.netlify.app/api/avatar/?face=9&nose=3&mouth=7&eyes=10&eyebrows=12&glasses=1&hair=35&accessories=0&details=0&beard=0&halloween=0&christmas=0",
   },
   {
     name: "Priya Patel",
     username: "@priyapatel",
-    body: "Our team ships 2x faster now. MergeGuard handles the initial review pass, and our senior engineers only need to review the AI's findings plus the architectural decisions.",
+    body: "Our team ships 2x faster now. Revorbit handles the initial review pass, and our senior engineers only need to review the AI's findings plus the architectural decisions.",
     img: "https://notion-avatars.netlify.app/api/avatar/?face=8&nose=7&mouth=4&eyes=0&eyebrows=6&glasses=11&hair=19&accessories=0&details=0&beard=0&halloween=0&christmas=0",
   },
   {
@@ -101,7 +101,7 @@ export function TestimonialSection() {
         </h2>
         <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
           Join engineering teams that have transformed their code review process
-          with MergeGuard. Here&apos;s what they have to say.
+          with Revorbit. Here&apos;s what they have to say.
         </p>
       </div>
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden gap-2">

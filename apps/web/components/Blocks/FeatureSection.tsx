@@ -9,7 +9,7 @@ export function FeaturesSection() {
     {
       title: "AI Pull Request Reviews",
       description:
-        "Every pull request is automatically analyzed by AI. MergeGuard detects bugs, vulnerabilities, and code quality issues before they reach production.",
+        "Every pull request is automatically analyzed by AI. Revorbit detects bugs, vulnerabilities, and code quality issues before they reach production.",
       icon: <GitPullRequest />,
     },
     {
@@ -53,7 +53,7 @@ export function FeaturesSection() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
         <h2 className="text-4xl md:text-5xl font-bold mb-4 text-neutral-800 dark:text-neutral-100">
-          Why Choose MergeGuard?
+          Why Choose Revorbit?
         </h2>
         <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
           An intelligent AI reviewer that helps your team review code faster,

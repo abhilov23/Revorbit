@@ -85,6 +85,7 @@ export function HeroVideoDialog({
         className="group relative cursor-pointer border-0 bg-transparent p-0"
         onClick={() => setIsVideoOpen(true)}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={thumbnailSrc}
           alt={thumbnailAlt}

@@ -1,14 +1,13 @@
-// apps/api/src/modules/github/github.controller.ts
-
 import type { Context } from "hono";
 
 import { github } from "@/lib/github";
 
-import { createWebhook, GITHUB_HEADERS } from "@mergeguard/github";
+import { createWebhook, GITHUB_HEADERS } from "@revorbit/github";
 
 import { env } from "@/config/env";
 import { success } from "@/utils/response";
 import { UnauthorizedError, ValidationError } from "@/errors";
+import { githubService } from "./github.service";
 
 const webhook = createWebhook(env.GITHUB_WEBHOOK_SECRET);
 
@@ -17,7 +16,6 @@ class GitHubController {
     const payload = await c.req.text();
     const event = c.req.header(GITHUB_HEADERS.EVENT) ?? "";
     const delivery = c.req.header(GITHUB_HEADERS.DELIVERY) ?? "";
-
     const signature = c.req.header(GITHUB_HEADERS.SIGNATURE) ?? "";
 
     if (!payload) {
@@ -35,6 +33,7 @@ class GitHubController {
     if (!delivery) {
       throw new ValidationError(`Missing ${GITHUB_HEADERS.DELIVERY} header`);
     }
+
     const valid = await webhook.verifySignature(payload, signature);
 
     if (!valid) {
@@ -43,58 +42,50 @@ class GitHubController {
 
     const webhookPayload = JSON.parse(payload);
 
-    if (event !== "pull_request") {
-      return success(c, {
-        ignored: true,
-      });
+    if (event === "pull_request") {
+      const result = await githubService.handlePullRequest(webhookPayload);
+      return success(c, result);
     }
 
-    if (webhookPayload.action !== "opened") {
-      return success(c, {
-        ignored: true,
-      });
+    if (event === "installation") {
+      const result = await githubService.handleInstallation(webhookPayload);
+      return success(c, result);
     }
 
-    const owner = webhookPayload.repository.owner.login;
-
-    const repo = webhookPayload.repository.name;
-
-    const pullNumber = webhookPayload.pull_request.number;
-
-    const installationId = webhookPayload.installation.id;
-
-    const octokit = await github.getInstallationClient(installationId);
-
-    console.log(octokit);
-
-    console.log({
-      owner,
-      repo,
-      pullNumber,
-      installationId,
-    });
+    if (event === "installation_repositories") {
+      const result = await githubService.handleInstallationRepositories(
+        webhookPayload,
+      );
+      return success(c, result);
+    }
 
     return success(c, {
-      owner,
-      repo,
-      pullNumber,
-      installationId,
+      ignored: true,
     });
   }
 
   async getAuthenticatedApp(c: Context) {
     const { data } = await github.app.rest.apps.getAuthenticated();
 
-    if (!data) {
-      throw new Error("GitHub App authentication failed.");
-    }
+    const installUrl = data?.slug
+      ? `https://github.com/apps/${data.slug}/installations/new`
+      : undefined;
 
     return success(c, {
-      id: data.id,
-      slug: data.slug,
-      name: data.name,
-      htmlUrl: data.html_url,
+      id: data?.id,
+      slug: data?.slug,
+      name: data?.name,
+      htmlUrl: data?.html_url,
+      installUrl,
     });
+  }
+
+  async listInstallations(c: Context) {
+    const userId = c.get("userId");
+
+    const installations = await githubService.listInstallationsForUser(userId);
+
+    return success(c, installations);
   }
 }
 
