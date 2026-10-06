@@ -4,9 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ArrowUpRight,
+  Bot,
   GitBranch,
   History,
   LayoutDashboard,
+  Settings2,
   UserRound,
 } from "lucide-react";
 
@@ -16,7 +18,9 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { name: "Repositories", href: "/dashboard/repositories", icon: GitBranch },
+  { name: "AI behavior", href: "/dashboard/ai-behavior", icon: Bot },
   { name: "Review history", href: "/dashboard/reviews", icon: History },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings2 },
   { name: "Account", href: "/dashboard/profile", icon: UserRound },
 ];
 

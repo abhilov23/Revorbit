@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
+import { demoReviews } from "@/lib/demo-workspace";
 
 interface ReviewSummary {
   id: string;
@@ -47,15 +48,15 @@ function formatDate(value: string) {
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<ReviewSummary[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [sample, setSample] = useState(false);
   const [filter, setFilter] = useState<ReviewFilter>("All reviews");
   const [query, setQuery] = useState("");
 
   useEffect(() => {
     let cancelled = false;
     api.get<ReviewSummary[]>("/reviews")
-      .then((data) => { if (!cancelled) setReviews(data); })
-      .catch(() => { if (!cancelled) setError("We couldn’t load your review history."); });
+      .then((data) => { if (!cancelled) { setReviews(data); setSample(false); } })
+      .catch(() => { if (!cancelled) { setReviews(demoReviews); setSample(true); } });
     return () => { cancelled = true; };
   }, []);
 
@@ -71,10 +72,6 @@ export default function ReviewsPage() {
     });
   }, [filter, query, reviews]);
 
-  if (error) {
-    return <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8"><Card><CardContent className="py-10 text-center"><p className="text-sm text-muted-foreground">{error}</p><Button className="mt-5" variant="outline" onClick={() => window.location.reload()}>Try again</Button></CardContent></Card></main>;
-  }
-
   if (!reviews) {
     return <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8"><div className="h-44 animate-pulse rounded-2xl bg-muted" /></main>;
   }
@@ -84,9 +81,9 @@ export default function ReviewsPage() {
       <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div>
           <p className="text-sm font-medium text-muted-foreground">Pull request activity</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Review history</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-3"><h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Review history</h1>{sample && <Badge variant="outline">Sample activity</Badge>}</div>
           <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">
-            Browse the latest reviews completed across your connected repositories.
+            {sample ? "Example pull request findings show how review activity will appear in your workspace." : "Browse the latest reviews completed across your connected repositories."}
           </p>
         </div>
         <div className="rounded-xl border bg-background px-4 py-3">

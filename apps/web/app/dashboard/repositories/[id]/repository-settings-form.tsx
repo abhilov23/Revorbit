@@ -55,13 +55,18 @@ export function RepositorySettingsForm({
     setSaving(true);
     setMessage(null);
     try {
-      await api.put(`/repositories/${repository.id}/settings`, {
-        enabled: form.enabled,
-        model: form.model.trim(),
-        maxFiles,
-      });
-      setMessage("Settings saved successfully.");
-      router.refresh();
+      if (repository.id.startsWith("demo-")) {
+        window.localStorage.setItem(`revorbit-repository-preview-${repository.id}`, JSON.stringify({ ...form, maxFiles }));
+        setMessage("Preview settings saved in this browser.");
+      } else {
+        await api.put(`/repositories/${repository.id}/settings`, {
+          enabled: form.enabled,
+          model: form.model.trim(),
+          maxFiles,
+        });
+        setMessage("Settings saved successfully.");
+        router.refresh();
+      }
     } catch {
       setMessage("We couldn’t save these settings. Please try again.");
     } finally {
@@ -138,7 +143,7 @@ export function RepositorySettingsForm({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div aria-live="polite" className="text-sm">
-          {message && <p className={message.startsWith("Settings saved") ? "flex items-center gap-2 text-emerald-700 dark:text-emerald-400" : "text-destructive"}>{message.startsWith("Settings saved") && <Check className="size-4" />}{message}</p>}
+          {message && <p className={message.includes("saved") ? "flex items-center gap-2 text-emerald-700 dark:text-emerald-400" : "text-destructive"}>{message.includes("saved") && <Check className="size-4" />}{message}</p>}
           {!valid && !message && <p className="text-destructive">Enter a model and a file limit from 1 to 100.</p>}
         </div>
         <Button onClick={save} disabled={saving || !valid}>
