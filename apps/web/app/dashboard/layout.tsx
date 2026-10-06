@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { Logo } from "@/components/logo";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -107,13 +108,16 @@ export default function DashboardLayout({
               </span>
               <span className="text-sm font-medium">{currentPage?.name ?? "Workspace"}</span>
             </div>
-            <Link
-              href="/dashboard/profile"
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <UserRound className="size-4" />
-              <span className="hidden sm:inline">Account</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              <AnimatedThemeToggler />
+              <Link
+                href="/dashboard/profile"
+                className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <UserRound className="size-4" />
+                <span className="hidden sm:inline">Account</span>
+              </Link>
+            </div>
           </div>
           <nav
             aria-label="Mobile workspace navigation"
