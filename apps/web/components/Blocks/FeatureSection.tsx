@@ -1,119 +1,99 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Bug, Eye, GitPullRequest, Lock, Zap, Cpu } from "lucide-react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Check,
+  Github,
+  MessageSquareCode,
+  Settings2,
+} from "lucide-react";
 import { motion } from "motion/react";
 
+import { Button } from "@/components/ui/button";
+
+const steps = [
+  {
+    number: "01",
+    title: "Install the GitHub App",
+    description:
+      "Choose a personal account or organization, then grant access to the repositories you want Revorbit to review.",
+    icon: Github,
+    details: ["Select repositories in GitHub", "No CI workflow to add"],
+  },
+  {
+    number: "02",
+    title: "Choose how reviews run",
+    description:
+      "Connect a repository, enable automatic reviews, and set the model and changed-file limit for review jobs.",
+    icon: Settings2,
+    details: ["Repository-level controls", "Pause reviews at any time"],
+  },
+  {
+    number: "03",
+    title: "Get feedback on the PR",
+    description:
+      "When a pull request opens or updates, Revorbit processes it and posts findings with suggested fixes directly on GitHub.",
+    icon: MessageSquareCode,
+    details: ["Inline GitHub comments", "Review history in your dashboard"],
+  },
+];
+
 export function FeaturesSection() {
-  const features = [
-    {
-      title: "AI Pull Request Reviews",
-      description:
-        "Every pull request is automatically analyzed by AI. Revorbit detects bugs, vulnerabilities, and code quality issues before they reach production.",
-      icon: <GitPullRequest />,
-    },
-    {
-      title: "Context-Aware Analysis",
-      description:
-        "The AI understands your entire codebase, not just the changed files. It retrieves relevant context to provide accurate, meaningful suggestions.",
-      icon: <Cpu />,
-    },
-    {
-      title: "Security Vulnerability Detection",
-      description:
-        "Identify secret leaks, unsafe APIs, authentication flaws, and dependency vulnerabilities automatically with every review.",
-      icon: <Lock />,
-    },
-    {
-      title: "Inline GitHub Reviews",
-      description:
-        "Review comments are published directly on your GitHub pull requests. Developers never need to leave their workflow.",
-      icon: <Eye />,
-    },
-    {
-      title: "Performance Analysis",
-      description:
-        "Detect expensive database queries, inefficient loops, memory issues, and unnecessary API calls before they impact users.",
-      icon: <Zap />,
-    },
-    {
-      title: "Multi-LLM Support",
-      description:
-        "Provider-independent architecture supports OpenAI, Anthropic, Google Gemini, and more. Choose the best model for your needs.",
-      icon: <Bug />,
-    },
-  ];
   return (
-    <div id="features" className="max-w-7xl mx-auto py-16">
+    <section id="features" className="scroll-mt-24 py-16 sm:py-24">
       <motion.div
-        className="text-center mb-16"
-        initial={{ opacity: 0, y: 30 }}
+        className="mx-auto mb-12 max-w-2xl text-center sm:mb-16"
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.5 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.5 }}
       >
-        <h2 className="text-4xl md:text-5xl font-bold mb-4 text-neutral-800 dark:text-neutral-100">
-          Why Choose Revorbit?
+        <p className="text-sm font-semibold text-muted-foreground">From install to inline feedback</p>
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-4xl">
+          A review flow that fits GitHub
         </h2>
-        <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto">
-          An intelligent AI reviewer that helps your team review code faster,
-          maintain consistent quality, and ship with confidence.
+        <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-neutral-600 dark:text-neutral-400">
+          Revorbit connects your repositories to an automated review worker and returns its findings to the pull request.
         </p>
       </motion.div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative z-10">
-        {features.map((feature, index) => (
-          <Feature key={feature.title} {...feature} index={index} />
+
+      <div className="grid gap-4 md:grid-cols-3">
+        {steps.map((step, index) => (
+          <motion.article
+            key={step.number}
+            className="relative overflow-hidden rounded-2xl border bg-card p-6 sm:p-7"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.45, delay: index * 0.1 }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex size-11 items-center justify-center rounded-xl bg-muted"><step.icon className="size-5" /></span>
+              <span className="font-mono text-xs text-muted-foreground">{step.number}</span>
+            </div>
+            <h3 className="mt-6 text-lg font-semibold">{step.title}</h3>
+            <p className="mt-2 min-h-20 text-sm leading-6 text-muted-foreground">{step.description}</p>
+            <ul className="mt-5 space-y-2 border-t pt-5">
+              {step.details.map((detail) => (
+                <li key={detail} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Check className="size-3.5 shrink-0 text-foreground" /> {detail}
+                </li>
+              ))}
+            </ul>
+          </motion.article>
         ))}
       </div>
-    </div>
+
+      <div className="mt-8 flex flex-col items-center justify-between gap-5 rounded-2xl border bg-muted/30 p-6 sm:flex-row sm:p-8">
+        <div>
+          <h3 className="font-semibold">Ready to connect a repository?</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Create an account to install the app and configure your first review.</p>
+        </div>
+        <Button className="rounded-full px-5" render={<Link href="/signup" />}>
+          Get started <ArrowRight data-icon="inline-end" />
+        </Button>
+      </div>
+    </section>
   );
 }
-
-const Feature = ({
-  title,
-  description,
-  icon,
-  index,
-}: {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  index: number;
-}) => {
-  return (
-    <motion.div
-      className={cn(
-        "flex flex-col lg:border-r py-10 relative group/feature dark:border-neutral-800",
-        (index === 0 || index === 3) && "lg:border-l dark:border-neutral-800",
-        index < 3 && "lg:border-b dark:border-neutral-800",
-      )}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.15,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-    >
-      {index < 3 && (
-        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-linear-to-t from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
-      )}
-      {index >= 3 && (
-        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-linear-to-b from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
-      )}
-      <div className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400 group-hover/feature:text-primary group-hover/feature:scale-101 transition duration-200">
-        {icon}
-      </div>
-      <div className="text-lg font-bold mb-2 relative z-10 px-10">
-        <div className="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full bg-neutral-300 dark:bg-neutral-700 group-hover/feature:bg-primary transition-all duration-200 origin-center" />
-        <span className="group-hover/feature:translate-x-2 transition duration-200 inline-block text-neutral-800 dark:text-neutral-100">
-          {title}
-        </span>
-      </div>
-      <p className="text-sm text-neutral-600 dark:text-neutral-300 max-w-xs relative z-10 px-10">
-        {description}
-      </p>
-    </motion.div>
-  );
-};

@@ -8,9 +8,7 @@ import Link from "next/link";
 import React from "react";
 
 const menuItems = [
-  { name: "Features", href: "/#features" },
-  { name: "Testimonials", href: "/#testimonials" },
-  { name: "Pricing", href: "/#pricing" },
+  { name: "How it works", href: "/#features" },
   { name: "FAQ", href: "/#faq" },
 ];
 
@@ -93,11 +91,20 @@ export const Navbar = () => {
               <AnimatedThemeToggler />
               <Button
                 size="sm"
-                className={"lg:inline-flex rounded-full h-8 px-3 text-sm"}
+                variant="ghost"
+                className="h-8 rounded-full px-3 text-sm"
+                render={<Link href="/login" />}
+                nativeButton={false}
+              >
+                <span>Sign in</span>
+              </Button>
+              <Button
+                size="sm"
+                className="h-8 rounded-full px-4 text-sm"
                 render={<Link href="/signup" />}
                 nativeButton={false}
               >
-                <span>Get Started</span>
+                <span>Get started</span>
               </Button>
             </div>
           </div>
