@@ -58,11 +58,11 @@ export function FeaturesSection() {
         </p>
       </motion.div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3 md:gap-8">
         {steps.map((step, index) => (
           <motion.article
             key={step.number}
-            className="relative overflow-hidden rounded-2xl border bg-card p-6 sm:p-7"
+            className="relative flex h-full flex-col rounded-2xl border bg-card p-6 sm:p-7"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
@@ -72,15 +72,18 @@ export function FeaturesSection() {
               <span className="flex size-11 items-center justify-center rounded-xl bg-muted"><step.icon className="size-5" /></span>
               <span className="font-mono text-xs text-muted-foreground">{step.number}</span>
             </div>
-            <h3 className="mt-6 text-lg font-semibold">{step.title}</h3>
-            <p className="mt-2 min-h-20 text-sm leading-6 text-muted-foreground">{step.description}</p>
-            <ul className="mt-5 space-y-2 border-t pt-5">
+            <h3 className="mt-6 min-h-14 text-lg font-semibold">{step.title}</h3>
+            <p className="mt-2 min-h-24 text-sm leading-6 text-muted-foreground">{step.description}</p>
+            <ul className="mt-auto space-y-2 border-t pt-5">
               {step.details.map((detail) => (
                 <li key={detail} className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Check className="size-3.5 shrink-0 text-foreground" /> {detail}
                 </li>
               ))}
             </ul>
+            {index < steps.length - 1 && (
+              <ArrowRight className="pointer-events-none absolute -right-[26px] top-1/2 z-10 hidden size-5 -translate-y-1/2 text-muted-foreground md:block" />
+            )}
           </motion.article>
         ))}
       </div>
