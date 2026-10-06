@@ -37,13 +37,24 @@ export const AnimatedThemeToggler = ({
   const toggleTheme = useCallback(async () => {
     if (!buttonRef.current) return;
 
-    await document.startViewTransition(() => {
-      flushSync(() => {
-        const newTheme = !isDark;
-        setIsDark(newTheme);
-        document.documentElement.classList.toggle("dark");
+    const newTheme = !isDark;
+    const applyTheme = () => {
+      setIsDark(newTheme);
+      document.documentElement.classList.toggle("dark", newTheme);
+      try {
         localStorage.setItem("theme", newTheme ? "dark" : "light");
-      });
+      } catch {
+        return;
+      }
+    };
+
+    if (!document.startViewTransition) {
+      applyTheme();
+      return;
+    }
+
+    await document.startViewTransition(() => {
+      flushSync(applyTheme);
     }).ready;
 
     const { top, left, width, height } =
@@ -73,6 +84,8 @@ export const AnimatedThemeToggler = ({
   return (
     <button
       ref={buttonRef}
+      type="button"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       onClick={toggleTheme}
       className={cn(className)}
       {...props}

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { Logo } from "@/components/logo";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -79,8 +80,8 @@ export default function DashboardLayout({
           <div className="rounded-xl border bg-muted/40 p-4">
             <p className="text-sm font-medium">Reviews, in your workflow</p>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              Connect a repository and Revorbit will review pull requests as they
-              change.
+              Connect a repository and Revorbit will review pull requests as
+              they change.
             </p>
             <Link
               href="/dashboard/repositories"
@@ -96,7 +97,10 @@ export default function DashboardLayout({
         <header className="border-b bg-background">
           <div className="flex h-16 items-center justify-between px-5 sm:px-8">
             <div className="flex items-center gap-3">
-              <Link href="/dashboard" className="flex items-center gap-2 lg:hidden">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 lg:hidden"
+              >
                 <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <Logo className="size-4" />
                 </span>
@@ -105,15 +109,20 @@ export default function DashboardLayout({
               <span className="hidden text-sm text-muted-foreground lg:inline">
                 Workspace <span className="mx-2 text-border">/</span>
               </span>
-              <span className="text-sm font-medium">{currentPage?.name ?? "Workspace"}</span>
+              <span className="text-sm font-medium">
+                {currentPage?.name ?? "Workspace"}
+              </span>
             </div>
-            <Link
-              href="/dashboard/profile"
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <UserRound className="size-4" />
-              <span className="hidden sm:inline">Account</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              <AnimatedThemeToggler className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+              <Link
+                href="/dashboard/profile"
+                className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <UserRound className="size-4" />
+                <span className="hidden sm:inline">Account</span>
+              </Link>
+            </div>
           </div>
           <nav
             aria-label="Mobile workspace navigation"
