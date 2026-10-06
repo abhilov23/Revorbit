@@ -1,110 +1,125 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { HeroVideoDialog } from "@/components/ui/hero-video-dialog";
-import { ShimmerButton } from "@/components/ui/shimmer-button";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Check,
+  GitBranch,
+  GitPullRequest,
+  MessageSquareCode,
+} from "lucide-react";
 import { motion, type Variants } from "motion/react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.1,
-    },
+    transition: { staggerChildren: 0.12, delayChildren: 0.08 },
   },
 };
 
 const fadeUpVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut",
-    },
-  },
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
 };
 
-const scaleInVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.95,
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut",
-    },
-  },
-};
-
-const Hero = () => {
+function ReviewExample() {
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible">
-      <motion.div
-        className="flex items-center justify-center"
-        variants={fadeUpVariants}
-      >
-        <Badge
-          className="h-auto text-sm font-medium px-4 py-2"
-          variant={"outline"}
-        >
-          Trusted by engineering teams worldwide 🎉
-        </Badge>
-      </motion.div>
+    <div className="relative mx-auto w-full max-w-xl">
+      <div className="absolute -inset-5 rounded-[2rem] bg-linear-to-br from-primary/10 via-transparent to-primary/5 blur-2xl" />
+      <div className="relative overflow-hidden rounded-2xl border bg-card text-left shadow-2xl shadow-black/10">
+        <div className="flex items-center justify-between gap-4 border-b px-5 py-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted"><GitPullRequest className="size-4" /></span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">Improve session refresh</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">acme/web-app · pull request #184</p>
+            </div>
+          </div>
+          <Badge variant="outline" className="shrink-0 gap-1.5"><Check className="size-3.5" /> Review complete</Badge>
+        </div>
+        <div className="space-y-4 p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
+              <GitBranch className="size-3.5 shrink-0" />
+              <span className="truncate font-mono">src/auth/session.ts:42</span>
+            </div>
+            <Badge variant="secondary" className="shrink-0">Example finding</Badge>
+          </div>
+          <div className="rounded-xl border bg-muted/30 p-4">
+            <div className="flex items-start gap-2.5">
+              <MessageSquareCode className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-semibold">Check expiry before refreshing</p>
+                <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
+                  This path refreshes a session without first checking whether it has expired. Consider validating the expiry before continuing.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border p-3">
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Current</p>
+              <pre className="mt-2 overflow-x-auto font-mono text-[11px] leading-5 text-muted-foreground"><code>if (session) &#123;{"\n"}  refresh(session);{"\n"}&#125;</code></pre>
+            </div>
+            <div className="rounded-xl border border-emerald-600/20 bg-emerald-500/5 p-3">
+              <p className="text-[11px] font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-400">Suggested</p>
+              <pre className="mt-2 overflow-x-auto font-mono text-[11px] leading-5"><code>if (session &amp;&amp; isValid(session)) &#123;{"\n"}  refresh(session);{"\n"}&#125;</code></pre>
+            </div>
+          </div>
+          <p className="text-center text-[11px] text-muted-foreground">Illustrative review preview</p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-      <div className="text-center mt-8">
+export default function Hero() {
+  return (
+    <motion.section
+      className="grid items-center gap-14 pb-16 pt-28 sm:pb-24 sm:pt-36 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12 lg:pb-28"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <div className="text-center lg:text-left">
+        <motion.div variants={fadeUpVariants}>
+          <Badge variant="outline" className="gap-2 rounded-full px-3 py-1.5 text-xs font-medium">
+            <span className="size-1.5 rounded-full bg-emerald-500" />
+            AI code review for GitHub
+          </Badge>
+        </motion.div>
         <motion.h1
-          className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl"
+          className="mx-auto mt-6 max-w-2xl text-4xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl lg:mx-0 lg:text-6xl"
           variants={fadeUpVariants}
         >
-          AI-Powered Code Reviews for Every Pull Request.
+          Pull requests reviewed. Feedback where your team works.
         </motion.h1>
         <motion.p
-          className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400 max-w-3xl mx-auto"
+          className="mx-auto mt-6 max-w-xl text-base leading-7 text-gray-600 dark:text-gray-400 sm:text-lg sm:leading-8 lg:mx-0"
           variants={fadeUpVariants}
         >
-          Revorbit automatically reviews every GitHub pull request for bugs,
-          security vulnerabilities, performance issues, and code quality — so
-          your team can merge with confidence.
+          Connect a GitHub repository and Revorbit will review pull requests as they open or change, then share inline findings and suggested fixes on GitHub.
         </motion.p>
+        <motion.div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start" variants={fadeUpVariants}>
+          <Button size="lg" className="rounded-full px-6" render={<Link href="/signup" />}>
+            Get started <ArrowRight data-icon="inline-end" />
+          </Button>
+          <Button size="lg" variant="outline" className="rounded-full px-6" render={<Link href="#features" />}>
+            See how it works
+          </Button>
+        </motion.div>
+        <motion.div className="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground lg:justify-start" variants={fadeUpVariants}>
+          <span className="inline-flex items-center gap-1.5"><Check className="size-3.5" /> GitHub App integration</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="size-3.5" /> Repository-level controls</span>
+        </motion.div>
       </div>
-
-      <motion.div
-        className="my-6 mb-12 flex items-center justify-center gap-x-4"
-        variants={fadeUpVariants}
-      >
-        <ShimmerButton onClick={() => window.location.assign("/signup")}>
-          Try For Free
-        </ShimmerButton>
+      <motion.div variants={fadeUpVariants}>
+        <ReviewExample />
       </motion.div>
-
-      <motion.div className="relative" variants={scaleInVariants}>
-        <HeroVideoDialog
-          className="block dark:hidden"
-          animationStyle="top-in-bottom-out"
-          videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
-          thumbnailSrc="https://startup-template-sage.vercel.app/hero-light.png"
-          thumbnailAlt="Hero Video"
-        />
-        <HeroVideoDialog
-          className="hidden dark:block"
-          animationStyle="top-in-bottom-out"
-          videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
-          thumbnailSrc="https://startup-template-sage.vercel.app/hero-dark.png"
-          thumbnailAlt="Hero Video"
-        />
-      </motion.div>
-    </motion.div>
+    </motion.section>
   );
-};
-
-export default Hero;
+}
