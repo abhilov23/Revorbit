@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -36,6 +36,31 @@ export default function AiBehaviorPage() {
   const [prompt, setPrompt] = useState(defaultPrompt);
   const [checks, setChecks] = useState({ security: true, correctness: true, performance: false, style: false });
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("revorbit-ai-behavior-preview");
+      if (!stored) return;
+      const parsed = JSON.parse(stored) as {
+        persona?: string;
+        repository?: string;
+        prompt?: string;
+        checks?: Partial<typeof checks>;
+      };
+      if (personas.some((item) => item.id === parsed.persona)) setPersona(parsed.persona!);
+      if (demoRepositories.some((item) => item.id === parsed.repository)) setRepository(parsed.repository!);
+      if (typeof parsed.prompt === "string") setPrompt(parsed.prompt);
+      const savedChecks = parsed.checks;
+      if (savedChecks) {
+        setChecks((current) => ({
+          ...current,
+          ...Object.fromEntries(Object.entries(savedChecks).filter(([, value]) => typeof value === "boolean")),
+        }));
+      }
+    } catch {
+      return;
+    }
+  }, []);
 
   const save = () => {
     window.localStorage.setItem("revorbit-ai-behavior-preview", JSON.stringify({ persona, repository, prompt, checks }));

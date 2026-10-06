@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bell, Check, Github, Globe2, Mail, Save, ShieldCheck, SlidersHorizontal } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 export default function WorkspaceSettingsPage() {
   const [settings, setSettings] = useState({ pullRequestReviews: true, inlineComments: true, weeklyDigest: false, mentionOnCritical: true });
+  const [model, setModel] = useState("balanced");
+  const [maxFiles, setMaxFiles] = useState("30");
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("revorbit-workspace-settings-preview");
+      if (!stored) return;
+      const parsed = JSON.parse(stored) as Partial<typeof settings> & { model?: string; maxFiles?: string };
+      setSettings((current) => ({
+        ...current,
+        ...Object.fromEntries(Object.entries(parsed).filter(([key, value]) => key in current && typeof value === "boolean")),
+      }));
+      if (parsed.model) setModel(parsed.model);
+      if (parsed.maxFiles) setMaxFiles(parsed.maxFiles);
+    } catch {
+      return;
+    }
+  }, []);
 
   const toggle = (key: keyof typeof settings) => {
     setSettings((current) => ({ ...current, [key]: !current[key] }));
@@ -17,7 +35,7 @@ export default function WorkspaceSettingsPage() {
   };
 
   const save = () => {
-    window.localStorage.setItem("revorbit-workspace-settings-preview", JSON.stringify(settings));
+    window.localStorage.setItem("revorbit-workspace-settings-preview", JSON.stringify({ ...settings, model, maxFiles }));
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2200);
   };
@@ -41,8 +59,8 @@ export default function WorkspaceSettingsPage() {
         <CardContent className="divide-y border-t py-0">
           {preferences.slice(0, 2).map(([key, title, description]) => <label key={key} className="flex cursor-pointer items-center justify-between gap-5 py-4"><span><span className="block text-sm font-medium">{title}</span><span className="mt-1 block text-xs leading-5 text-muted-foreground">{description}</span></span><input type="checkbox" checked={settings[key]} onChange={() => toggle(key)} className="size-4 shrink-0 accent-foreground" /></label>)}
           <div className="grid gap-4 py-4 sm:grid-cols-2">
-            <label className="space-y-2 text-sm font-medium">Default review model<select defaultValue="balanced" className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-ring"><option value="balanced">Balanced · Claude 3.7 Sonnet</option><option value="fast">Fast · GPT-4.1 mini</option><option value="deep">Deep analysis · GPT-4.1</option></select></label>
-            <label className="space-y-2 text-sm font-medium">Default maximum changed files<select defaultValue="30" className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-ring"><option value="15">15 files</option><option value="30">30 files</option><option value="50">50 files</option></select></label>
+            <label className="space-y-2 text-sm font-medium">Default review model<select value={model} onChange={(event) => setModel(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-ring"><option value="balanced">Balanced · Claude 3.7 Sonnet</option><option value="fast">Fast · GPT-4.1 mini</option><option value="deep">Deep analysis · GPT-4.1</option></select></label>
+            <label className="space-y-2 text-sm font-medium">Default maximum changed files<select value={maxFiles} onChange={(event) => setMaxFiles(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-ring"><option value="15">15 files</option><option value="30">30 files</option><option value="50">50 files</option></select></label>
           </div>
         </CardContent>
       </Card>

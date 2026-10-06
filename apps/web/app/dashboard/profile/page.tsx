@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { LogoutButton } from "./logout-button";
-import { api } from "@/lib/api";
+import { api, isDemoModeActive } from "@/lib/api";
 
 interface UserProfile {
   id: string;
@@ -40,7 +40,12 @@ export default function ProfilePage() {
   useEffect(() => {
     let cancelled = false;
     api.get<AuthResponse>("/auth/me")
-      .then((auth) => { if (!cancelled) setProfile(auth.user); })
+      .then((auth) => {
+        if (!cancelled) {
+          setProfile(auth.user);
+          setSample(isDemoModeActive());
+        }
+      })
       .catch(() => { if (!cancelled) { setProfile({ id: "sample-user", name: "Alex Morgan", email: "alex@example.com", login: "alexmorgan", avatarUrl: null, githubId: null }); setSample(true); } });
     return () => { cancelled = true; };
   }, []);
