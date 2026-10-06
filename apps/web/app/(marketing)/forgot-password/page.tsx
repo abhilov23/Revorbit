@@ -54,7 +54,12 @@ export default function ForgotPasswordPage() {
           <CardTitle className="text-xl">
             {submitted ? "Request preview" : "Forgot your password?"}
           </CardTitle>
-          <CardDescription className="max-w-xs text-balance leading-relaxed">
+          <CardDescription
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="max-w-xs text-balance leading-relaxed"
+          >
             {submitted
               ? "Your reset request is ready. Email delivery isn’t connected yet, so no message was sent."
               : "Enter the email address associated with your account and we’ll help you get back in."}

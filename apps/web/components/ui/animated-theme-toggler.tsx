@@ -44,7 +44,11 @@ export const AnimatedThemeToggler = ({
       flushSync(() => {
         setIsDark(newTheme);
         root.classList.toggle("dark", newTheme);
-        localStorage.setItem("theme", newTheme ? "dark" : "light");
+        try {
+          localStorage.setItem("theme", newTheme ? "dark" : "light");
+        } catch {
+          return;
+        }
       });
     };
 
