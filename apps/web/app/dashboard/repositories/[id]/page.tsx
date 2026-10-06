@@ -23,7 +23,7 @@ interface RepositorySettings {
 }
 
 export default function RepositorySettingsPage() {
-  const params = useParams<{ repositoryId: string }>();
+  const params = useParams<{ id: string }>();
   const router = useRouter();
   const [repository, setRepository] = useState<RepositorySettings | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +32,7 @@ export default function RepositorySettingsPage() {
     let cancelled = false;
 
     api
-      .get<RepositorySettings>(`/repositories/${params.repositoryId}`)
+      .get<RepositorySettings>(`/repositories/${params.id}`)
       .then((data) => {
         if (!cancelled) setRepository(data);
       })
@@ -46,7 +46,7 @@ export default function RepositorySettingsPage() {
     return () => {
       cancelled = true;
     };
-  }, [params.repositoryId, router]);
+  }, [params.id, router]);
 
   if (error) {
     return (

@@ -82,7 +82,9 @@ const Hero = () => {
         className="my-6 mb-12 flex items-center justify-center gap-x-4"
         variants={fadeUpVariants}
       >
-        <ShimmerButton>Try For Free</ShimmerButton>
+        <ShimmerButton onClick={() => window.location.assign("/signup")}>
+          Try For Free
+        </ShimmerButton>
       </motion.div>
 
       <motion.div className="relative" variants={scaleInVariants}>
