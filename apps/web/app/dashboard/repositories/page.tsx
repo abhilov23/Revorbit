@@ -21,7 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { api } from "@/lib/api";
+import { api, isDemoModeActive } from "@/lib/api";
 import { demoRepositories } from "@/lib/demo-workspace";
 
 interface GithubApp {
@@ -78,7 +78,7 @@ export default function RepositoriesPage() {
         setApp(appData);
         setInstallations(installationsData);
         setRepositories(repositoriesData);
-        setSample(false);
+        setSample(isDemoModeActive());
         setError(null);
       })
       .catch(() => {

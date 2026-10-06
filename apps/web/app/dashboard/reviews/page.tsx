@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { api } from "@/lib/api";
+import { api, isDemoModeActive } from "@/lib/api";
 import { demoReviews } from "@/lib/demo-workspace";
 
 interface ReviewSummary {
@@ -55,7 +55,7 @@ export default function ReviewsPage() {
   useEffect(() => {
     let cancelled = false;
     api.get<ReviewSummary[]>("/reviews")
-      .then((data) => { if (!cancelled) { setReviews(data); setSample(false); } })
+      .then((data) => { if (!cancelled) { setReviews(data); setSample(isDemoModeActive()); } })
       .catch(() => { if (!cancelled) { setReviews(demoReviews); setSample(true); } });
     return () => { cancelled = true; };
   }, []);

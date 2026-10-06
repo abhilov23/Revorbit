@@ -21,7 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { api } from "@/lib/api";
+import { api, isDemoModeActive } from "@/lib/api";
 import { demoRepositories, demoReviews } from "@/lib/demo-workspace";
 
 interface UserProfile {
@@ -86,7 +86,10 @@ export default function DashboardPage() {
       api.get<ReviewSummary[]>("/reviews"),
     ])
       .then(([auth, repositories, reviews]) => {
-        if (!cancelled) setData({ user: auth.user, repositories, reviews });
+        if (!cancelled) {
+          setData({ user: auth.user, repositories, reviews });
+          setSample(isDemoModeActive());
+        }
       })
       .catch(() => {
         if (!cancelled) {
