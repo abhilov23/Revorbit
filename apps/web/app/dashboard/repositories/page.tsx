@@ -22,6 +22,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { api } from "@/lib/api";
+import { demoRepositories } from "@/lib/demo-workspace";
 
 interface GithubApp {
   id: number;
@@ -64,6 +65,7 @@ export default function RepositoriesPage() {
   const [installations, setInstallations] = useState<Installation[] | null>(null);
   const [repositories, setRepositories] = useState<RepositorySummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sample, setSample] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(() => {
@@ -76,9 +78,16 @@ export default function RepositoriesPage() {
         setApp(appData);
         setInstallations(installationsData);
         setRepositories(repositoriesData);
+        setSample(false);
         setError(null);
       })
-      .catch(() => setError("We couldn’t load your repositories. Try again."));
+      .catch(() => {
+        setApp(null);
+        setInstallations([]);
+        setRepositories(demoRepositories);
+        setSample(true);
+        setError(null);
+      });
   }, []);
 
   useEffect(() => {
@@ -138,9 +147,9 @@ export default function RepositoriesPage() {
       <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div>
           <p className="text-sm font-medium text-muted-foreground">Workspace settings</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Repositories</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-3"><h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Repositories</h1>{sample && <Badge variant="outline">Sample data</Badge>}</div>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-            Choose which GitHub repositories Revorbit can review when pull requests are opened or updated.
+            {sample ? "Example repositories show how review controls will appear once GitHub is connected." : "Choose which GitHub repositories Revorbit can review when pull requests are opened or updated."}
           </p>
         </div>
         {app?.installUrl && (

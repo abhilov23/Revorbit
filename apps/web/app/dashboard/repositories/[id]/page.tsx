@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { api } from "@/lib/api";
+import { demoRepositories } from "@/lib/demo-workspace";
 import { RepositorySettingsForm } from "./repository-settings-form";
 
 interface RepositorySettings {
@@ -37,6 +38,13 @@ export default function RepositorySettingsPage() {
         if (!cancelled) setRepository(data);
       })
       .catch(() => {
+        if (!cancelled && params.id.startsWith("demo-")) {
+          const sample = demoRepositories.find((item) => item.id === params.id);
+          if (sample) {
+            setRepository({ ...sample, settings: { ...sample.settings, security: true, performance: false, bestPractices: true } });
+            return;
+          }
+        }
         if (!cancelled) {
           setError("Repository not found");
           router.replace("/dashboard/repositories");

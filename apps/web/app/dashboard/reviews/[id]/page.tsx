@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { api } from "@/lib/api";
+import { demoReviewDetail } from "@/lib/demo-workspace";
 
 interface ReviewDetail {
   id: string;
@@ -67,6 +68,10 @@ export default function ReviewDetailPage() {
     api.get<ReviewDetail>(`/reviews/${params.id}`)
       .then((data) => { if (!cancelled) setReview(data); })
       .catch(() => {
+        if (!cancelled && params.id === demoReviewDetail.id) {
+          setReview(demoReviewDetail);
+          return;
+        }
         if (!cancelled) {
           setError(true);
           router.replace("/dashboard/reviews");

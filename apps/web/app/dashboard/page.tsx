@@ -22,6 +22,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { api } from "@/lib/api";
+import { demoRepositories, demoReviews } from "@/lib/demo-workspace";
 
 interface UserProfile {
   id: string;
@@ -74,7 +75,7 @@ function formatDate(value: string) {
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [sample, setSample] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -88,31 +89,20 @@ export default function DashboardPage() {
         if (!cancelled) setData({ user: auth.user, repositories, reviews });
       })
       .catch(() => {
-        if (!cancelled) setError("We couldn’t load your workspace.");
+        if (!cancelled) {
+          setSample(true);
+          setData({
+            user: { id: "sample-user", name: "Alex Morgan", email: "alex@example.com", login: "alexmorgan", avatarUrl: null },
+            repositories: demoRepositories,
+            reviews: demoReviews,
+          });
+        }
       });
 
     return () => {
       cancelled = true;
     };
   }, []);
-
-  if (error) {
-    return (
-      <main className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
-        <Card className="mx-auto max-w-xl rounded-2xl">
-          <CardContent className="py-10 text-center">
-            <p className="font-medium">{error}</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Check your connection and try again.
-            </p>
-            <Button className="mt-5" variant="outline" onClick={() => window.location.reload()}>
-              Try again
-            </Button>
-          </CardContent>
-        </Card>
-      </main>
-    );
-  }
 
   if (!data) {
     return (
@@ -142,7 +132,7 @@ export default function DashboardPage() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground">
               <span className="size-1.5 rounded-full bg-emerald-500" />
-              Workspace overview
+              {sample ? "Sample workspace · preview data" : "Workspace overview"}
             </div>
             <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
               Good to see you, {greeting}.
@@ -151,10 +141,13 @@ export default function DashboardPage() {
               Your pull request reviews, connected repositories, and workspace activity—all in one place.
             </p>
           </div>
-          <Button className="shrink-0" render={<Link href="/dashboard/repositories" />}>
-            <Plus data-icon="inline-start" />
-            Connect repository
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" className="shrink-0" render={<Link href="/dashboard/ai-behavior" />}>Configure AI behavior</Button>
+            <Button className="shrink-0" render={<Link href="/dashboard/repositories" />}>
+              <Plus data-icon="inline-start" />
+              Connect repository
+            </Button>
+          </div>
         </div>
       </section>
 

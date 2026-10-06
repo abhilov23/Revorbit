@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ArrowUpRight, Github, Mail, UserRound } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -34,17 +35,16 @@ function initialsOf(name: string) {
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [error, setError] = useState(false);
+  const [sample, setSample] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     api.get<AuthResponse>("/auth/me")
       .then((auth) => { if (!cancelled) setProfile(auth.user); })
-      .catch(() => { if (!cancelled) setError(true); });
+      .catch(() => { if (!cancelled) { setProfile({ id: "sample-user", name: "Alex Morgan", email: "alex@example.com", login: "alexmorgan", avatarUrl: null, githubId: null }); setSample(true); } });
     return () => { cancelled = true; };
   }, []);
 
-  if (error) return <main className="mx-auto max-w-4xl px-5 py-10 sm:px-8"><Card><CardContent className="py-10 text-center"><p className="text-sm text-muted-foreground">We couldn’t load your account.</p><Button className="mt-5" variant="outline" onClick={() => window.location.reload()}>Try again</Button></CardContent></Card></main>;
   if (!profile) return <main className="mx-auto max-w-4xl px-5 py-10 sm:px-8"><div className="h-40 animate-pulse rounded-2xl bg-muted" /></main>;
 
   const displayName = profile.name ?? profile.login ?? "Revorbit user";
@@ -53,7 +53,7 @@ export default function ProfilePage() {
     <main className="mx-auto max-w-4xl space-y-7 px-5 py-8 sm:px-8 sm:py-10">
       <div>
         <p className="text-sm font-medium text-muted-foreground">Workspace settings</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Account</h1>
+        <div className="mt-2 flex flex-wrap items-center gap-3"><h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Account</h1>{sample && <Badge variant="outline">Sample profile</Badge>}</div>
         <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">Your Revorbit identity and connected GitHub account.</p>
       </div>
 
