@@ -9,6 +9,7 @@ import {
   GitBranch,
   History,
   Plus,
+  Sparkles,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -98,7 +99,7 @@ export default function DashboardPage() {
   if (error) {
     return (
       <main className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
-        <Card className="mx-auto max-w-xl">
+        <Card className="mx-auto max-w-xl rounded-2xl">
           <CardContent className="py-10 text-center">
             <p className="font-medium">{error}</p>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -115,8 +116,14 @@ export default function DashboardPage() {
 
   if (!data) {
     return (
-      <main className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
-        <div className="h-32 animate-pulse rounded-2xl bg-muted" />
+      <main className="mx-auto max-w-7xl space-y-6 px-5 py-8 sm:px-8 sm:py-10">
+        <div className="h-40 animate-pulse rounded-3xl bg-muted" />
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="h-28 animate-pulse rounded-2xl bg-muted" />
+          <div className="h-28 animate-pulse rounded-2xl bg-muted" />
+          <div className="h-28 animate-pulse rounded-2xl bg-muted" />
+        </div>
+        <div className="h-72 animate-pulse rounded-3xl bg-muted" />
       </main>
     );
   }
@@ -125,94 +132,125 @@ export default function DashboardPage() {
     (repository) => repository.settings.enabled,
   ).length;
   const greeting = data.user.name?.split(" ")[0] ?? data.user.login ?? "there";
+  const hasRepositories = data.repositories.length > 0;
 
   return (
-    <main className="mx-auto max-w-7xl space-y-8 px-5 py-8 sm:px-8 sm:py-10">
-      <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-sm font-medium text-muted-foreground">Your workspace</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Good to see you, {greeting}.
-          </h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-            Keep an eye on your connected repositories and the latest pull request reviews.
-          </p>
+    <main className="mx-auto max-w-7xl space-y-8 px-5 py-7 sm:px-8 sm:py-10">
+      <section className="relative overflow-hidden rounded-3xl border bg-background p-6 shadow-sm sm:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-primary/[0.04] blur-3xl" />
+        <div className="relative flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground">
+              <span className="size-1.5 rounded-full bg-emerald-500" />
+              Workspace overview
+            </div>
+            <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+              Good to see you, {greeting}.
+            </h1>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
+              Your pull request reviews, connected repositories, and workspace activity—all in one place.
+            </p>
+          </div>
+          <Button className="shrink-0" render={<Link href="/dashboard/repositories" />}>
+            <Plus data-icon="inline-start" />
+            Connect repository
+          </Button>
         </div>
-        <Button render={<Link href="/dashboard/repositories" />}>
-          <Plus data-icon="inline-start" />
-          Connect repository
-        </Button>
       </section>
 
       <section aria-label="Workspace summary" className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardContent className="flex items-center gap-4 p-5">
-            <span className="flex size-11 items-center justify-center rounded-xl bg-muted text-foreground">
+        <Card className="rounded-2xl shadow-sm">
+          <CardContent className="flex items-center gap-4 p-5 sm:p-6">
+            <span className="flex size-11 items-center justify-center rounded-xl bg-blue-500/10 text-blue-700 dark:text-blue-300">
               <GitBranch className="size-5" />
             </span>
             <div>
               <p className="text-sm text-muted-foreground">Connected repositories</p>
-              <p className="mt-0.5 text-2xl font-semibold">{data.repositories.length}</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight">{data.repositories.length}</p>
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-5">
-            <span className="flex size-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+        <Card className="rounded-2xl shadow-sm">
+          <CardContent className="flex items-center gap-4 p-5 sm:p-6">
+            <span className="flex size-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
               <Check className="size-5" />
             </span>
             <div>
               <p className="text-sm text-muted-foreground">Automatic reviews on</p>
-              <p className="mt-0.5 text-2xl font-semibold">{enabledRepositories}</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight">{enabledRepositories}</p>
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-5">
-            <span className="flex size-11 items-center justify-center rounded-xl bg-muted text-foreground">
+        <Card className="rounded-2xl shadow-sm">
+          <CardContent className="flex items-center gap-4 p-5 sm:p-6">
+            <span className="flex size-11 items-center justify-center rounded-xl bg-violet-500/10 text-violet-700 dark:text-violet-300">
               <History className="size-5" />
             </span>
             <div>
               <p className="text-sm text-muted-foreground">Recent reviews</p>
-              <p className="mt-0.5 text-2xl font-semibold">{data.reviews.length}</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight">{data.reviews.length}</p>
             </div>
           </CardContent>
         </Card>
       </section>
 
-      {data.repositories.length === 0 ? (
-        <Card className="overflow-hidden">
-          <CardContent className="grid gap-8 p-6 sm:p-9 md:grid-cols-[1fr_auto] md:items-center">
+      {!hasRepositories && (
+        <section aria-labelledby="setup-title" className="overflow-hidden rounded-3xl border bg-background shadow-sm">
+          <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div className="max-w-2xl">
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-                <GitBranch className="size-5" />
+              <div className="flex size-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+                <Sparkles className="size-5" />
               </div>
-              <h2 className="mt-5 text-xl font-semibold tracking-tight">Start with a GitHub repository</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Install the Revorbit GitHub App, choose a repository, and reviews will appear here when pull requests are opened or updated.
+              <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Get started
+              </p>
+              <h2 id="setup-title" className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+                Your review workspace starts here
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
+                Connect a GitHub repository and Revorbit will review pull requests as they open and change. Your review activity will show up here automatically.
               </p>
             </div>
-            <Button render={<Link href="/dashboard/repositories" />}>
+            <Button className="shrink-0" size="lg" render={<Link href="/dashboard/repositories" />}>
               Set up repositories <ArrowRight data-icon="inline-end" />
             </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-          <Card>
-            <CardHeader className="flex flex-row items-start justify-between gap-4">
-              <div>
-                <CardTitle>Repositories</CardTitle>
-                <CardDescription className="mt-1">
-                  Repositories connected to Revorbit
-                </CardDescription>
-              </div>
-              <Button variant="ghost" size="sm" render={<Link href="/dashboard/repositories" />}>
-                View all <ArrowRight data-icon="inline-end" />
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {data.repositories.slice(0, 5).map((repository) => (
+          </div>
+          <div className="grid border-t bg-muted/20 sm:grid-cols-3">
+            <div className="border-b p-5 sm:border-b-0 sm:border-r sm:p-6">
+              <span className="text-xs font-semibold text-muted-foreground">STEP 01</span>
+              <p className="mt-2 text-sm font-medium">Install the GitHub App</p>
+              <p className="mt-1 text-sm leading-5 text-muted-foreground">Give Revorbit access to the repositories you choose.</p>
+            </div>
+            <div className="border-b p-5 sm:border-b-0 sm:border-r sm:p-6">
+              <span className="text-xs font-semibold text-muted-foreground">STEP 02</span>
+              <p className="mt-2 text-sm font-medium">Choose your repositories</p>
+              <p className="mt-1 text-sm leading-5 text-muted-foreground">Enable automatic reviews for the projects you want.</p>
+            </div>
+            <div className="p-5 sm:p-6">
+              <span className="text-xs font-semibold text-muted-foreground">STEP 03</span>
+              <p className="mt-2 text-sm font-medium">Review pull requests</p>
+              <p className="mt-1 text-sm leading-5 text-muted-foreground">Find completed reviews and feedback right here.</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className="grid gap-6 xl:grid-cols-2">
+        <Card className="rounded-2xl shadow-sm">
+          <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+            <div>
+              <CardTitle>Repositories</CardTitle>
+              <CardDescription className="mt-1">
+                {hasRepositories ? "Your connected projects" : "Projects connected to this workspace"}
+              </CardDescription>
+            </div>
+            <Button variant="ghost" size="sm" render={<Link href="/dashboard/repositories" />}>
+              {hasRepositories ? "View all" : "Connect"} <ArrowRight data-icon="inline-end" />
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {hasRepositories ? (
+              data.repositories.slice(0, 5).map((repository) => (
                 <Link
                   key={repository.id}
                   href={`/dashboard/repositories/${repository.id}`}
@@ -231,55 +269,61 @@ export default function DashboardPage() {
                     {repository.settings.enabled ? "Active" : "Paused"}
                   </Badge>
                 </Link>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-start justify-between gap-4">
-              <div>
-                <CardTitle>Latest reviews</CardTitle>
-                <CardDescription className="mt-1">
-                  Pull requests recently processed by Revorbit
-                </CardDescription>
+              ))
+            ) : (
+              <div className="rounded-xl border border-dashed px-5 py-8 text-center">
+                <GitBranch className="mx-auto size-5 text-muted-foreground" />
+                <p className="mt-3 text-sm font-medium">No repositories yet</p>
+                <p className="mt-1 text-sm text-muted-foreground">Connect a project to start building your review workspace.</p>
               </div>
-              <Button variant="ghost" size="sm" render={<Link href="/dashboard/reviews" />}>
-                View history <ArrowRight data-icon="inline-end" />
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {data.reviews.length === 0 ? (
-                <div className="rounded-xl border border-dashed p-6 text-center">
-                  <CircleDot className="mx-auto size-5 text-muted-foreground" />
-                  <p className="mt-3 text-sm font-medium">No reviews yet</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    A review will show up when an enabled repository gets a pull request.
-                  </p>
-                </div>
-              ) : (
-                data.reviews.slice(0, 5).map((review) => (
-                  <Link
-                    key={review.id}
-                    href={`/dashboard/reviews/${review.id}`}
-                    className="flex items-center justify-between gap-3 rounded-xl border p-3.5 transition-colors hover:bg-muted/50"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">
-                        {review.repository} <span className="text-muted-foreground">#{review.pullNumber}</span>
-                      </p>
-                      <p className="mt-0.5 truncate text-xs text-muted-foreground">{review.pullTitle}</p>
-                    </div>
-                    <div className="flex shrink-0 flex-col items-end gap-1.5">
-                      <Badge variant={statusVariant(review.status)}>{review.status.replaceAll("_", " ")}</Badge>
-                      <span className="text-xs text-muted-foreground">{formatDate(review.createdAt)}</span>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </section>
-      )}
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl shadow-sm">
+          <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+            <div>
+              <CardTitle>Latest reviews</CardTitle>
+              <CardDescription className="mt-1">
+                Pull requests recently processed by Revorbit
+              </CardDescription>
+            </div>
+            <Button variant="ghost" size="sm" render={<Link href="/dashboard/reviews" />}>
+              View history <ArrowRight data-icon="inline-end" />
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {data.reviews.length === 0 ? (
+              <div className="rounded-xl border border-dashed px-5 py-8 text-center">
+                <CircleDot className="mx-auto size-5 text-muted-foreground" />
+                <p className="mt-3 text-sm font-medium">Your review activity will appear here</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Reviews show up when an enabled repository gets a pull request.
+                </p>
+              </div>
+            ) : (
+              data.reviews.slice(0, 5).map((review) => (
+                <Link
+                  key={review.id}
+                  href={`/dashboard/reviews/${review.id}`}
+                  className="flex items-center justify-between gap-3 rounded-xl border p-3.5 transition-colors hover:bg-muted/50"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">
+                      {review.repository} <span className="text-muted-foreground">#{review.pullNumber}</span>
+                    </p>
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground">{review.pullTitle}</p>
+                  </div>
+                  <div className="flex shrink-0 flex-col items-end gap-1.5">
+                    <Badge variant={statusVariant(review.status)}>{review.status.replaceAll("_", " ")}</Badge>
+                    <span className="text-xs text-muted-foreground">{formatDate(review.createdAt)}</span>
+                  </div>
+                </Link>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </section>
     </main>
   );
 }
