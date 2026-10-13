@@ -1,10 +1,10 @@
-import type { Context } from "hono";
+import type { AppContext } from "@/types/context";
 
 import { env } from "@/config/env";
 import { AppError, InternalServerError } from "@/errors";
 import { logger } from "@/lib/logger";
 
-export const errorHandler = (err: Error, c: Context) => {
+export const errorHandler = (err: Error, c: AppContext) => {
   const requestId = c.get("requestId");
 
   // Handle known application errors

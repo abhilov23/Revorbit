@@ -1,6 +1,6 @@
-import type { Context } from "hono";
+import type { AppContext } from "@/types/context";
 
-export function notFoundHandler(c: Context) {
+export function notFoundHandler(c: AppContext) {
   return c.json(
     {
       success: false,

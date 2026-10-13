@@ -1,52 +1,50 @@
-import { createId } from "@paralleldrive/cuid2";
-import { setCookie } from "hono/cookie";
-import type { Context } from "hono";
+import type { AppContext } from "@/types/context";
 
 import { env } from "@/config/env";
+import { setSessionCookie } from "@/lib/cookies";
+import { oauthStateStore } from "@/lib/oauth-state";
+import { logger } from "@/lib/logger";
 import { githubOAuthService } from "./github-oauth.service";
 
-const SESSION_COOKIE = "revorbit_session";
-
-function sessionCookieOptions() {
-  return {
-    httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax" as const,
-    path: "/",
-    maxAge: env.SESSION_TTL_SECONDS,
-  };
-}
-
 class GithubOAuthController {
-  async authorize(c: Context) {
-    const state = createId();
+  async authorize(c: AppContext) {
+    const state = await oauthStateStore.issue();
     const url = githubOAuthService.getAuthorizeUrl(state);
 
     return c.json({
       success: true,
-      data: {
-        url,
-        state,
-      },
+      data: { url, state },
     });
   }
 
-  async callback(c: Context) {
+  async callback(c: AppContext) {
     const code = c.req.query("code");
     const state = c.req.query("state");
 
+    const fail = () => c.redirect(`${env.WEB_ORIGIN}/login?error=oauth_failed`);
+
     if (!code || !state) {
-      return c.redirect(`${env.WEB_ORIGIN}/login?error=oauth_failed`);
+      return fail();
+    }
+
+    // Without this check the flow is vulnerable to login CSRF: an attacker
+    // completes their own OAuth flow and replays the resulting `code` against a
+    // victim's browser, binding the victim to the attacker's GitHub account.
+    const valid = await oauthStateStore.consume(state);
+    if (!valid) {
+      logger.warn("oauth.state.mismatch");
+      return fail();
     }
 
     try {
       const result = await githubOAuthService.authenticate(code);
 
-      setCookie(c, SESSION_COOKIE, result.sessionId, sessionCookieOptions());
+      setSessionCookie(c, result.sessionId);
 
       return c.redirect(env.WEB_ORIGIN + "/dashboard");
-    } catch {
-      return c.redirect(`${env.WEB_ORIGIN}/login?error=oauth_failed`);
+    } catch (error) {
+      logger.error({ error }, "oauth.callback.failed");
+      return fail();
     }
   }
 }

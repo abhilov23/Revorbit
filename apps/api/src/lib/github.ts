@@ -1,7 +1,7 @@
 import fs from "node:fs";
-import path from "node:path";
 
 import { createGithubApp } from "@revorbit/github";
+import { resolveRepoPath } from "@revorbit/shared";
 
 import { env } from "@/config/env";
 
@@ -17,8 +17,5 @@ function getPrivateKeyFromFile(): string {
     );
   }
 
-  return fs.readFileSync(
-    path.resolve(process.cwd(), env.GITHUB_PRIVATE_KEY_PATH),
-    "utf8",
-  );
+  return fs.readFileSync(resolveRepoPath(env.GITHUB_PRIVATE_KEY_PATH), "utf8");
 }

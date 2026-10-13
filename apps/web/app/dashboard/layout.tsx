@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   ArrowUpRight,
   Bot,
+  Bug,
   GitBranch,
   History,
   LayoutDashboard,
@@ -21,6 +22,7 @@ const navItems = [
   { name: "Repositories", href: "/dashboard/repositories", icon: GitBranch },
   { name: "AI behavior", href: "/dashboard/ai-behavior", icon: Bot },
   { name: "Review history", href: "/dashboard/reviews", icon: History },
+  { name: "Issues", href: "/dashboard/issues", icon: Bug },
   { name: "Settings", href: "/dashboard/settings", icon: Settings2 },
   { name: "Account", href: "/dashboard/profile", icon: UserRound },
 ];
@@ -80,8 +82,8 @@ export default function DashboardLayout({
           <div className="rounded-xl border bg-muted/40 p-4">
             <p className="text-sm font-medium">Reviews, in your workflow</p>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              Connect a repository and Revorbit will review pull requests as they
-              change.
+              Connect a repository and Revorbit will review pull requests as
+              they change.
             </p>
             <Link
               href="/dashboard/repositories"
@@ -97,7 +99,10 @@ export default function DashboardLayout({
         <header className="border-b bg-background">
           <div className="flex h-16 items-center justify-between px-5 sm:px-8">
             <div className="flex items-center gap-3">
-              <Link href="/dashboard" className="flex items-center gap-2 lg:hidden">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 lg:hidden"
+              >
                 <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <Logo className="size-4" />
                 </span>
@@ -106,7 +111,9 @@ export default function DashboardLayout({
               <span className="hidden text-sm text-muted-foreground lg:inline">
                 Workspace <span className="mx-2 text-border">/</span>
               </span>
-              <span className="text-sm font-medium">{currentPage?.name ?? "Workspace"}</span>
+              <span className="text-sm font-medium">
+                {currentPage?.name ?? "Workspace"}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <AnimatedThemeToggler />

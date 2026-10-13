@@ -8,7 +8,12 @@ import {
   UserRound,
 } from "lucide-react";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 
 const items = [
@@ -54,12 +59,15 @@ export function FaqSection() {
   return (
     <section id="faq" className="scroll-mt-24 py-20 sm:py-28">
       <div className="mb-12 text-center">
-        <p className="text-sm font-semibold text-muted-foreground">Common questions</p>
+        <p className="text-sm font-semibold text-muted-foreground">
+          Common questions
+        </p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-4xl">
           How Revorbit works
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-neutral-600 dark:text-neutral-400">
-          A straightforward GitHub workflow, with controls for each connected repository.
+          A straightforward GitHub workflow, with controls for each connected
+          repository.
         </p>
       </div>
       <Accordion className="mx-auto max-w-3xl" defaultValue={["item-1"]}>
@@ -70,7 +78,12 @@ export function FaqSection() {
                 <item.icon className="size-4 shrink-0" />
                 <span>{item.title}</span>
               </span>
-              <span aria-hidden="true" className="ml-auto text-muted-foreground">+</span>
+              <span
+                aria-hidden="true"
+                className="ml-auto text-muted-foreground"
+              >
+                +
+              </span>
             </AccordionTrigger>
             <AccordionContent className="pl-8 text-sm leading-6 text-muted-foreground">
               {item.content}
@@ -79,8 +92,12 @@ export function FaqSection() {
         ))}
       </Accordion>
       <div className="mt-8 flex flex-col items-center justify-center gap-3 text-center sm:flex-row">
-        <p className="text-sm text-muted-foreground">Ready to try Revorbit on a repository?</p>
-        <Button size="sm" variant="outline" render={<Link href="/signup" />}>Create an account</Button>
+        <p className="text-sm text-muted-foreground">
+          Ready to try Revorbit on a repository?
+        </p>
+        <Button size="sm" variant="outline" render={<Link href="/signup" />}>
+          Create an account
+        </Button>
       </div>
     </section>
   );

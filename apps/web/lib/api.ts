@@ -1,16 +1,36 @@
-import {
-  demoRepositories,
-  demoReviewDetail,
-  demoReviews,
-} from "@/lib/demo-workspace";
-
-const API_ORIGIN = process.env.NEXT_PUBLIC_API_ORIGIN ?? "http://localhost:3000";
+const API_ORIGIN =
+  process.env.NEXT_PUBLIC_API_ORIGIN ?? "http://localhost:3000";
 const API_PREFIX = "/api/v1";
 
-export interface ApiError {
-  status: number;
-  code: string;
-  message: string;
+/**
+ * Error thrown for any non-2xx response.
+ *
+ * Extends `Error` so `instanceof` and `.stack` behave, which the previous plain
+ * object literal did not.
+ */
+export class ApiError extends Error {
+  readonly status: number;
+  readonly code: string;
+
+  constructor(status: number, code: string, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.code = code;
+  }
+
+  /** True when the session is missing or expired and the user must sign in. */
+  get isUnauthorized(): boolean {
+    return this.status === 401;
+  }
+}
+
+/** Raised when the API could not be reached at all. */
+export class NetworkError extends Error {
+  constructor(message = "Could not reach the Revorbit API.") {
+    super(message);
+    this.name = "NetworkError";
+  }
 }
 
 interface ApiResponse<T> {
@@ -19,245 +39,86 @@ interface ApiResponse<T> {
   error?: { code: string; message: string };
 }
 
-interface DemoRepository {
-  id: string;
-  fullName: string;
-  owner: string;
-  name: string;
-  defaultBranch: string;
-  settings: {
-    enabled: boolean;
-    model: string;
-    maxFiles: number;
-    security?: boolean;
-    performance?: boolean;
-    bestPractices?: boolean;
-  };
-}
+let redirecting = false;
 
-interface DemoWorkspace {
-  repositories: DemoRepository[];
-}
-
-const DEMO_STORAGE_KEY = "revorbit-demo-workspace";
-const DEMO_UNHANDLED = Symbol("demo-unhandled");
-let demoModeActive = false;
-
-export function isDemoModeActive() {
-  return demoModeActive;
-}
-
-function initialDemoWorkspace(): DemoWorkspace {
-  return {
-    repositories: demoRepositories.map((repository) => ({
-      ...repository,
-      settings: { ...repository.settings },
-    })),
-  };
-}
-
-function readDemoWorkspace(): DemoWorkspace {
-  try {
-    const stored = localStorage.getItem(DEMO_STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored) as Partial<DemoWorkspace>;
-      if (Array.isArray(parsed.repositories)) {
-        return { repositories: parsed.repositories as DemoRepository[] };
-      }
-    }
-  } catch {
-    return initialDemoWorkspace();
-  }
-  return initialDemoWorkspace();
-}
-
-function saveDemoWorkspace(workspace: DemoWorkspace) {
-  try {
-    localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(workspace));
-  } catch {
+/** Sends the user to sign-in once, when the session turns out to be dead. */
+function redirectToLogin(): void {
+  if (redirecting || typeof window === "undefined") {
     return;
   }
+  redirecting = true;
+
+  const next = window.location.pathname + window.location.search;
+  const target =
+    next && next !== "/" ? `/login?next=${encodeURIComponent(next)}` : "/login";
+
+  window.location.assign(target);
 }
 
-const availableRepositories = [
-  { githubId: 1001, fullName: "acme/storefront", owner: "acme", name: "storefront", defaultBranch: "main" },
-  { githubId: 1002, fullName: "acme/platform-api", owner: "acme", name: "platform-api", defaultBranch: "main" },
-  { githubId: 1003, fullName: "acme/ops-dashboard", owner: "acme", name: "ops-dashboard", defaultBranch: "develop" },
-  { githubId: 1004, fullName: "acme/mobile-app", owner: "acme", name: "mobile-app", defaultBranch: "main" },
-];
+/**
+ * Generates an idempotency key for a mutating request.
+ *
+ * Sent so a retried POST cannot repeat a side effect that already applied —
+ * a dropped connection would otherwise leave the user clicking twice.
+ */
+function idempotencyKey(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
 
-function demoResponse<T>(path: string, init: RequestInit): T | typeof DEMO_UNHANDLED {
-  const method = (init.method ?? "GET").toUpperCase();
-  const normalizedPath = path.replace(/\/$/, "");
-  const workspace = readDemoWorkspace();
-  const body = typeof init.body === "string"
-    ? JSON.parse(init.body) as Record<string, unknown>
-    : {};
-
-  if (method === "GET" && normalizedPath === "/auth/me") {
-    return {
-      user: {
-        id: "sample-user",
-        name: "Alex Morgan",
-        email: "alex@example.com",
-        login: "alexmorgan",
-        avatarUrl: null,
-        githubId: null,
-      },
-    } as T;
-  }
-
-  if (method === "POST" && normalizedPath === "/auth/logout") return undefined as T;
-
-  if (method === "GET" && normalizedPath === "/github/app") {
-    return {
-      id: 987654,
-      slug: "revorbit-demo",
-      name: "Revorbit Demo",
-      htmlUrl: "https://github.com/apps/revorbit-demo",
-      installUrl: null,
-    } as T;
-  }
-
-  if (method === "GET" && normalizedPath === "/github/installations") {
-    return [
-      {
-        id: "demo-installation-acme",
-        githubId: 100,
-        accountLogin: "acme",
-        accountType: "Organization",
-        repositories: availableRepositories.map((repository) => ({
-          ...repository,
-          connected: workspace.repositories.some((item) => item.fullName === repository.fullName),
-        })),
-      },
-    ] as T;
-  }
-
-  if (method === "GET" && normalizedPath === "/repositories") {
-    return workspace.repositories as T;
-  }
-
-  const repositoryMatch = normalizedPath.match(/^\/repositories\/([^/]+)$/);
-  if (repositoryMatch && method === "GET") {
-    const repository = workspace.repositories.find((item) => item.id === repositoryMatch[1]);
-    return (repository ? {
-      ...repository,
-      settings: {
-        security: true,
-        performance: false,
-        bestPractices: true,
-        ...repository.settings,
-      },
-    } : DEMO_UNHANDLED) as T | typeof DEMO_UNHANDLED;
-  }
-
-  const repositorySettingsMatch = normalizedPath.match(/^\/repositories\/([^/]+)\/settings$/);
-  if (repositorySettingsMatch && method === "PUT") {
-    const repositories = workspace.repositories.map((repository) =>
-      repository.id === repositorySettingsMatch[1]
-        ? { ...repository, settings: { ...repository.settings, ...body } }
-        : repository,
-    );
-    const updated = repositories.find((repository) => repository.id === repositorySettingsMatch[1]);
-    if (!updated) return DEMO_UNHANDLED;
-    saveDemoWorkspace({ repositories });
-    return updated as T;
-  }
-
-  if (repositoryMatch && method === "DELETE") {
-    const repositories = workspace.repositories.filter((repository) => repository.id !== repositoryMatch[1]);
-    if (repositories.length === workspace.repositories.length) return DEMO_UNHANDLED;
-    saveDemoWorkspace({ repositories });
-    return undefined as T;
-  }
-
-  if (method === "POST" && normalizedPath === "/repositories/connect") {
-    const available = availableRepositories.find((repository) => repository.githubId === body.githubId);
-    if (!available) return DEMO_UNHANDLED;
-    const existing = workspace.repositories.find((repository) => repository.fullName === available.fullName);
-    if (existing) return existing as T;
-    const repository: DemoRepository = {
-      id: `demo-${available.owner}-${available.name}`,
-      fullName: available.fullName,
-      owner: available.owner,
-      name: available.name,
-      defaultBranch: available.defaultBranch,
-      settings: { enabled: true, model: "Claude 3.7 Sonnet", maxFiles: 30 },
-    };
-    saveDemoWorkspace({ repositories: [...workspace.repositories, repository] });
-    return repository as T;
-  }
-
-  if (method === "GET" && normalizedPath === "/reviews") return demoReviews as T;
-
-  const reviewMatch = normalizedPath.match(/^\/reviews\/([^/]+)$/);
-  if (reviewMatch && method === "GET") {
-    if (reviewMatch[1] === demoReviewDetail.id) return demoReviewDetail as T;
-    const review = demoReviews.find((item) => item.id === reviewMatch[1]);
-    if (!review) return DEMO_UNHANDLED;
-    return {
-      ...demoReviewDetail,
-      ...review,
-      summary: "This sample review highlights actionable changes and suggested fixes for the pull request.",
-      comments: [],
-    } as T;
-  }
-
-  return DEMO_UNHANDLED;
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   let response: Response;
+
+  const method = (init.method ?? "GET").toUpperCase();
+
+  // Normalized through `Headers` because `init.headers` may be an array, a
+  // Headers instance, or a plain object.
+  const headers = new Headers(init.headers);
+
+  headers.set("Content-Type", "application/json");
+
+  if (
+    method !== "GET" &&
+    method !== "HEAD" &&
+    !headers.has("Idempotency-Key")
+  ) {
+    headers.set("Idempotency-Key", idempotencyKey());
+  }
+
   try {
     response = await fetch(`${API_ORIGIN}${API_PREFIX}${path}`, {
       ...init,
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        ...init.headers,
-      },
+      headers,
     });
   } catch {
-    const mock = demoResponse<T>(path, init);
-    if (mock !== DEMO_UNHANDLED) {
-      demoModeActive = true;
-      return mock;
-    }
-    throw new Error("Request failed");
+    // A transport failure is surfaced as a distinct error type so pages can
+    // tell "the server is down" apart from "the request was rejected".
+    throw new NetworkError();
   }
 
   if (response.status === 204) {
-    if (path === "/auth/logout") demoModeActive = false;
     return undefined as T;
   }
 
-  const body = (await response.json().catch(() => null)) as ApiResponse<T> | null;
+  const body = (await response
+    .json()
+    .catch(() => null)) as ApiResponse<T> | null;
 
   if (!response.ok || !body?.success) {
-    if (response.status === 401) {
-      const mock = demoResponse<T>(path, init);
-      if (mock !== DEMO_UNHANDLED) {
-        demoModeActive = true;
-        return mock;
-      }
+    const status = response.status;
+    const code = body?.error?.code ?? "UNKNOWN_ERROR";
+    const message = body?.error?.message ?? "Request failed";
+
+    if (status === 401) {
+      redirectToLogin();
     }
 
-    if (response.status === 401 && !init.method && typeof window !== "undefined") {
-      window.location.assign("/login");
-    }
-
-    const error: ApiError = {
-      status: response.status,
-      code: body?.error?.code ?? "UNKNOWN_ERROR",
-      message: body?.error?.message ?? "Request failed",
-    };
-    throw error;
+    throw new ApiError(status, code, message);
   }
 
-  if (["/auth/me", "/auth/login", "/auth/signup"].includes(path)) {
-    demoModeActive = false;
-  }
   return body.data;
 }
 
@@ -273,10 +134,10 @@ export const api = {
     });
   },
 
-  put<T>(path: string, body: unknown) {
+  put<T>(path: string, body?: unknown) {
     return request<T>(path, {
       method: "PUT",
-      body: JSON.stringify(body),
+      body: JSON.stringify(body ?? {}),
     });
   },
 
@@ -285,12 +146,20 @@ export const api = {
       method: "DELETE",
     });
   },
-
-  postForm<T>(path: string, body: URLSearchParams) {
-    return request<T>(path, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-    });
-  },
 };
+
+/** Normalises anything thrown by the client into a message to show the user. */
+export function errorMessage(
+  error: unknown,
+  fallback = "Something went wrong. Please try again.",
+): string {
+  if (error instanceof ApiError || error instanceof NetworkError) {
+    return error.message;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return fallback;
+}

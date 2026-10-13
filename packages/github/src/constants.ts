@@ -4,6 +4,8 @@ export const GITHUB_EVENTS = {
   INSTALLATION_REPOSITORIES: "installation_repositories",
   PULL_REQUEST_REVIEW: "pull_request_review",
   PULL_REQUEST_REVIEW_COMMENT: "pull_request_review_comment",
+  ISSUES: "issues",
+  ISSUE_COMMENT: "issue_comment",
 } as const;
 
 export const GITHUB_HEADERS = {

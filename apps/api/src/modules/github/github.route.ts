@@ -1,9 +1,10 @@
 import { Hono } from "hono";
+import type { AppEnv } from "@/types/context";
 
 import { requireAuth } from "@/middleware/auth";
 import { githubController } from "./github.controller";
 
-const githubRouter = new Hono();
+const githubRouter = new Hono<AppEnv>();
 
 githubRouter.post("/webhook", (c) => githubController.webhook(c));
 

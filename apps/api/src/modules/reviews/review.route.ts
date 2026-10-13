@@ -1,9 +1,10 @@
 import { Hono } from "hono";
+import type { AppEnv } from "@/types/context";
 
 import { requireAuth } from "@/middleware/auth";
 import { reviewController } from "./review.controller";
 
-const reviewRouter = new Hono();
+const reviewRouter = new Hono<AppEnv>();
 
 reviewRouter.use("*", requireAuth);
 

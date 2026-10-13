@@ -49,12 +49,15 @@ export function FeaturesSection() {
         viewport={{ once: true, amount: 0.5 }}
         transition={{ duration: 0.5 }}
       >
-        <p className="text-sm font-semibold text-muted-foreground">From install to inline feedback</p>
+        <p className="text-sm font-semibold text-muted-foreground">
+          From install to inline feedback
+        </p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-4xl">
           A review flow that fits GitHub
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-neutral-600 dark:text-neutral-400">
-          Revorbit connects your repositories to an automated review worker and returns its findings to the pull request.
+          Revorbit connects your repositories to an automated review worker and
+          returns its findings to the pull request.
         </p>
       </motion.div>
 
@@ -69,15 +72,25 @@ export function FeaturesSection() {
             transition={{ duration: 0.45, delay: index * 0.1 }}
           >
             <div className="flex items-center justify-between">
-              <span className="flex size-11 items-center justify-center rounded-xl bg-muted"><step.icon className="size-5" /></span>
-              <span className="font-mono text-xs text-muted-foreground">{step.number}</span>
+              <span className="flex size-11 items-center justify-center rounded-xl bg-muted">
+                <step.icon className="size-5" />
+              </span>
+              <span className="font-mono text-xs text-muted-foreground">
+                {step.number}
+              </span>
             </div>
             <h3 className="mt-6 text-lg font-semibold">{step.title}</h3>
-            <p className="mt-2 min-h-20 text-sm leading-6 text-muted-foreground">{step.description}</p>
+            <p className="mt-2 min-h-20 text-sm leading-6 text-muted-foreground">
+              {step.description}
+            </p>
             <ul className="mt-5 space-y-2 border-t pt-5">
               {step.details.map((detail) => (
-                <li key={detail} className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Check className="size-3.5 shrink-0 text-foreground" /> {detail}
+                <li
+                  key={detail}
+                  className="flex items-center gap-2 text-xs text-muted-foreground"
+                >
+                  <Check className="size-3.5 shrink-0 text-foreground" />{" "}
+                  {detail}
                 </li>
               ))}
             </ul>
@@ -88,7 +101,10 @@ export function FeaturesSection() {
       <div className="mt-8 flex flex-col items-center justify-between gap-5 rounded-2xl border bg-muted/30 p-6 sm:flex-row sm:p-8">
         <div>
           <h3 className="font-semibold">Ready to connect a repository?</h3>
-          <p className="mt-1 text-sm text-muted-foreground">Create an account to install the app and configure your first review.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Create an account to install the app and configure your first
+            review.
+          </p>
         </div>
         <Button className="rounded-full px-5" render={<Link href="/signup" />}>
           Get started <ArrowRight data-icon="inline-end" />

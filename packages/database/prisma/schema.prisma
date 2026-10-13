@@ -8,17 +8,36 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  githubId     Int?     @unique
-  login        String?
-  name         String?
-  email        String?  @unique
-  passwordHash String?
-  avatarUrl    String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                String   @id @default(cuid())
+  githubId          Int?     @unique
+  login             String?
+  name              String?
+  email             String?  @unique
+  passwordHash      String?
+  avatarUrl         String?
+  resetTokenHash    String?  @unique
+  resetTokenExpires DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   installations Installation[]
+  settings      UserSettings?
+}
+
+model UserSettings {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  defaultModel       String   @default("gpt-4o-mini")
+  defaultMaxFiles    Int      @default(20)
+  pullRequestReviews Boolean  @default(true)
+  inlineComments     Boolean  @default(true)
+  mentionOnCritical  Boolean  @default(true)
+  weeklyDigest       Boolean  @default(false)
+  emailNotifications Boolean  @default(false)
+  defaultAutonomy    AutonomyLevel @default(SUGGEST)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model Installation {
@@ -28,6 +47,13 @@ model Installation {
   accountType  String
   userId       String?
   user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// GitHub account that performed the installation.
+  ///
+  /// Recorded so an installation can be linked later if the person who
+  /// installed it was signed in by email rather than by GitHub OAuth. Without
+  /// this, such an installation is orphaned and its repositories are
+  /// unreachable from the dashboard.
+  installedByGithubId Int?
   repositories Repository[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -44,53 +70,122 @@ model Repository {
   installationId String
   installation   Installation @relation(fields: [installationId], references: [id], onDelete: Cascade)
   reviews        Review[]
+  issues         Issue[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
 
 model RepositorySettings {
-  id                String     @id @default(cuid())
-  repositoryId      String     @unique
-  repository        Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
-  enabled           Boolean    @default(true)
-  security          Boolean    @default(true)
-  performance       Boolean    @default(true)
-  bestPractices     Boolean    @default(true)
-  model             String     @default("deepseek-ai/deepseek-coder-6.7b-instruct")
-  maxFiles          Int        @default(20)
-  maxTokens         Int        @default(4000)
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
+  id            String   @id @default(cuid())
+  repositoryId  String   @unique
+  repository    Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  enabled       Boolean  @default(true)
+  security      Boolean  @default(true)
+  correctness   Boolean  @default(true)
+  performance   Boolean  @default(true)
+  style         Boolean  @default(true)
+  role          Role     @default(SECURITY_RESEARCHER)
+  customPrompt  String?
+  /// How much authority the agent has over this repository.
+  autonomyLevel AutonomyLevel @default(SUGGEST)
+  model         String    @default("gpt-4o-mini")
+  maxFiles      Int       @default(20)
+  /// Cap on the AI response. Reasoning models spend part of this budget on
+  /// internal reasoning, so the default is generous: at 4000 the response was
+  /// routinely truncated mid-JSON and the review was lost.
+  maxTokens     Int       @default(16000)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Review {
-  id           String          @id @default(cuid())
+  id           String       @id @default(cuid())
   repositoryId String
-  repository   Repository      @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  repository   Repository   @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
   pullNumber   Int
   pullTitle    String
   headSha      String
-  status       ReviewStatus    @default(PENDING)
+  status       ReviewStatus @default(PENDING)
   summary      String?
   model        String
+
+  /// True when some diff chunks could not be analysed. A partial review must
+  /// never be presented as if it covered the whole pull request.
+  partial      Boolean   @default(false)
+  /// Human-readable explanation of what was not covered.
+  partialReason String?
+  /// Number of diff chunks that were analysed successfully.
+  chunksAnalyzed Int      @default(0)
+  /// Number of diff chunks that could not be analysed.
+  chunksFailed   Int      @default(0)
+
   comments     ReviewComment[]
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Guarantees a single review per PR commit, so duplicate webhook deliveries
+  // cannot enqueue the same job twice.
+  @@unique([repositoryId, pullNumber, headSha])
+  @@index([repositoryId, createdAt])
 }
 
 model ReviewComment {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   reviewId    String
-  review      Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  review      Review     @relation(fields: [reviewId], references: [id], onDelete: Cascade)
   filePath    String
   line        Int
-  severity    String
+  category    FindingCategory
+  severity    Severity
   title       String
   body        String
-  problemCode String   @default("")
-  fixedCode   String   @default("")
-  suggestion  String?
-  createdAt   DateTime @default(now())
+  problemCode String     @default("")
+  fixedCode   String     @default("")
+
+  /// Set when the finding could not be anchored to a changed line and was
+  /// therefore published in the review body instead of as an inline comment.
+  inline      Boolean  @default(true)
+
+  createdAt   DateTime   @default(now())
+}
+
+model Issue {
+  id            String       @id @default(cuid())
+  repositoryId  String
+  repository    Repository   @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  number        Int
+  title         String
+  body          String?
+  state         String       @default("OPEN")
+  status        IssueStatus  @default(PENDING)
+  issueType     IssueType?
+  confidence    Float?
+  summary       String?
+  explanation   String?
+  proposedApproach String?
+  suspectedFiles String[]  @default([])
+  /// Branch created for a proposed fix, when autonomy allowed one.
+  fixBranch     String?
+  fixPullNumber Int?
+  errorMessage  String?
+  model         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([repositoryId, number])
+  @@index([repositoryId, createdAt])
+}
+
+/// Records processed GitHub webhook deliveries so a redelivery of the same
+/// `x-github-delivery` id is a no-op.
+model WebhookDelivery {
+  id         String   @id
+  event      String
+  action     String?
+  repository String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 enum ReviewStatus {
@@ -98,4 +193,54 @@ enum ReviewStatus {
   IN_PROGRESS
   COMPLETED
   FAILED
+}
+
+enum Severity {
+  info
+  low
+  medium
+  high
+  critical
+}
+
+enum FindingCategory {
+  bug
+  security
+  performance
+  quality
+  maintainability
+  architecture
+}
+
+/// Reviewer role. Shapes the system prompt ordering and emphasis.
+enum Role {
+  REVIEWER
+  SECURITY_RESEARCHER
+  DEVELOPER
+  HELPER
+}
+
+/// How much authority the agent has over a repository. Mapped to concrete
+/// capabilities; never checked directly at a call site.
+enum AutonomyLevel {
+  OBSERVE
+  SUGGEST
+  PROPOSE
+  AUTONOMOUS
+}
+
+enum IssueStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum IssueType {
+  bug
+  feature
+  security
+  documentation
+  performance
+  other
 }

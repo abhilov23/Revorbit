@@ -1,25 +1,32 @@
-import type { Context } from "hono";
+import type { AppContext } from "@/types/context";
+import { requireUserId, validatedBody } from "@/types/context";
 
 import { ValidationError } from "@/errors";
 import { success, noContent } from "@/utils/response";
 import { repositoryService } from "./repository.service";
+import type {
+  ConnectRepositoryInput,
+  UpdateRepositorySettingsInput,
+} from "@revorbit/validators";
 
 class RepositoryController {
-  async list(c: Context) {
-    const repositories = await repositoryService.listRepositories();
+  async list(c: AppContext) {
+    const repositories = await repositoryService.listRepositories(
+      requireUserId(c),
+    );
     return success(c, repositories);
   }
 
-  async connect(c: Context) {
-    const userId = c.get("userId");
-    const input = c.get("validatedBody");
+  async connect(c: AppContext) {
+    const userId = requireUserId(c);
+    const input = validatedBody<ConnectRepositoryInput>(c);
 
     const repository = await repositoryService.connectRepository(userId, input);
     return success(c, repository);
   }
 
-  async disconnect(c: Context) {
-    const userId = c.get("userId");
+  async disconnect(c: AppContext) {
+    const userId = requireUserId(c);
     const repositoryId = c.req.param("repositoryId");
 
     if (!repositoryId) {
@@ -30,27 +37,33 @@ class RepositoryController {
     return noContent(c);
   }
 
-  async get(c: Context) {
+  async get(c: AppContext) {
+    const userId = requireUserId(c);
     const repositoryId = c.req.param("repositoryId");
 
     if (!repositoryId) {
       throw new ValidationError("Missing repository id");
     }
 
-    const repository = await repositoryService.getRepository(repositoryId);
+    const repository = await repositoryService.getRepository(
+      userId,
+      repositoryId,
+    );
     return success(c, repository);
   }
 
-  async updateSettings(c: Context) {
+  async updateSettings(c: AppContext) {
+    const userId = requireUserId(c);
     const repositoryId = c.req.param("repositoryId");
 
     if (!repositoryId) {
       throw new ValidationError("Missing repository id");
     }
 
-    const input = c.get("validatedBody");
+    const input = validatedBody<UpdateRepositorySettingsInput>(c);
 
     const repository = await repositoryService.updateSettings(
+      userId,
       repositoryId,
       input,
     );

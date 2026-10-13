@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import type { AppEnv } from "@/types/context";
 
 import { requireAuth } from "@/middleware/auth";
 import { validate } from "@/validators/validate";
@@ -8,16 +9,14 @@ import {
 } from "@revorbit/validators";
 import { repositoryController } from "./repository.controller";
 
-const repositoryRouter = new Hono();
+const repositoryRouter = new Hono<AppEnv>();
 
 repositoryRouter.use("*", requireAuth);
 
 repositoryRouter.get("/", (c) => repositoryController.list(c));
 
-repositoryRouter.post(
-  "/connect",
-  validate(connectRepositorySchema),
-  (c) => repositoryController.connect(c),
+repositoryRouter.post("/connect", validate(connectRepositorySchema), (c) =>
+  repositoryController.connect(c),
 );
 
 repositoryRouter.get("/:repositoryId", (c) => repositoryController.get(c));

@@ -54,7 +54,9 @@ export const AnimatedThemeToggler = ({
 
     const startViewTransition = (
       document as Document & {
-        startViewTransition?: (callback: () => void) => { ready: Promise<void> };
+        startViewTransition?: (callback: () => void) => {
+          ready: Promise<void>;
+        };
       }
     ).startViewTransition;
 
@@ -113,5 +115,4 @@ export const AnimatedThemeToggler = ({
       <span className="sr-only">{buttonLabel}</span>
     </button>
   );
-
 };

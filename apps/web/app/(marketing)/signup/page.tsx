@@ -1,22 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { UserPlus } from "lucide-react";
 
-import { api } from "@/lib/api";
+import { AuthShell } from "@/components/auth-shell";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Logo } from "@/components/logo";
-import Link from "next/link";
+import { api, errorMessage } from "@/lib/api";
+
+const MIN_PASSWORD_LENGTH = 8;
 
 export default function SignupPage() {
   const router = useRouter();
@@ -27,119 +22,124 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const mismatch = confirmPassword.length > 0 && password !== confirmPassword;
+  const tooShort = password.length > 0 && password.length < MIN_PASSWORD_LENGTH;
+  const valid = password.length >= MIN_PASSWORD_LENGTH && !mismatch;
+
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (!valid) return;
+
     setSubmitting(true);
     setError(null);
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      setSubmitting(false);
-      return;
-    }
 
     try {
       await api.post("/auth/signup", { name, email, password });
       router.push("/dashboard");
       router.refresh();
-    } catch (requestError) {
-      const message =
-        requestError instanceof Error
-          ? requestError.message
-          : typeof requestError === "object" &&
-              requestError !== null &&
-              "message" in requestError
-            ? String(requestError.message)
-            : "Failed to create account";
-      setError(message);
+    } catch (cause: unknown) {
+      setError(errorMessage(cause, "We couldn't create your account."));
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-white dark:bg-black flex items-center justify-center px-6">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+    <AuthShell
+      icon={<UserPlus className="size-5" />}
+      title="Create your account"
+      description="Start reviewing pull requests with AI in a couple of minutes"
+      descriptionRole="alert"
+      footer={
+        <>
+          Already have an account?{" "}
           <Link
-            href="/"
-            className="flex items-center justify-center space-x-2 mb-4"
+            href="/login"
+            className="font-medium text-foreground hover:underline"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary dark:bg-primary/30">
-              <Logo className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-lg font-semibold text-gray-900 dark:text-white">
-              Revorbit
-            </span>
+            Sign in
           </Link>
-          <CardTitle className="text-xl">Create an account</CardTitle>
-          <CardDescription>Get started with Revorbit today</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={submit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full name</Label>
-              <Input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="John Doe"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="hello@example.com"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="••••••••"
-                minLength={8}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm password</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                placeholder="••••••••"
-                required
-              />
-            </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" className="w-full rounded-full" disabled={submitting}>
-              {submitting ? "Creating account..." : "Create account"}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="justify-center">
-          <p className="text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Link
-              href="/login"
-              className="text-primary hover:underline font-medium"
-            >
-              Sign in
-            </Link>
+        </>
+      }
+    >
+      <form onSubmit={submit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            autoComplete="name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Alex Morgan"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="hello@example.com"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            minLength={MIN_PASSWORD_LENGTH}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="••••••••"
+            required
+          />
+          {tooShort && (
+            <p className="text-xs text-destructive">
+              Use at least {MIN_PASSWORD_LENGTH} characters.
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="confirm-password">Confirm password</Label>
+          <Input
+            id="confirm-password"
+            type="password"
+            autoComplete="new-password"
+            minLength={MIN_PASSWORD_LENGTH}
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+            placeholder="••••••••"
+            required
+          />
+          {mismatch && (
+            <p className="text-xs text-destructive">
+              The two passwords don&apos;t match.
+            </p>
+          )}
+        </div>
+
+        {error && (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
           </p>
-        </CardFooter>
-      </Card>
-    </main>
+        )}
+
+        <Button
+          type="submit"
+          className="w-full rounded-full"
+          disabled={!valid || submitting}
+        >
+          {submitting ? "Creating account…" : "Create account"}
+        </Button>
+      </form>
+    </AuthShell>
   );
 }

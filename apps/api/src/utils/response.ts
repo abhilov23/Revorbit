@@ -1,32 +1,12 @@
-import type { Context } from "hono";
+import type { AppContext } from "@/types/context";
 
-export function success<T>(c: Context, data: T) {
+export function success<T>(c: AppContext, data: T) {
   return c.json({
     success: true,
     data,
   });
 }
 
-export function created<T>(c: Context, data: T) {
-  return c.json(
-    {
-      success: true,
-      data,
-    },
-    201,
-  );
-}
-
-export function accepted<T>(c: Context, data: T) {
-  return c.json(
-    {
-      success: true,
-      data,
-    },
-    202,
-  );
-}
-
-export function noContent(c: Context) {
+export function noContent(c: AppContext) {
   return c.body(null, 204);
 }

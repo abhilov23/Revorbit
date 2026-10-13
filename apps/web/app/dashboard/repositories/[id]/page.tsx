@@ -3,63 +3,58 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import { api } from "@/lib/api";
-import { demoRepositories } from "@/lib/demo-workspace";
+import { api, errorMessage } from "@/lib/api";
+import type { RepositorySummary } from "@/lib/api-types";
 import { RepositorySettingsForm } from "./repository-settings-form";
-
-interface RepositorySettings {
-  id: string;
-  fullName: string;
-  owner: string;
-  name: string;
-  defaultBranch: string;
-  settings: {
-    enabled: boolean;
-    security: boolean;
-    performance: boolean;
-    bestPractices: boolean;
-    model: string;
-    maxFiles: number;
-  };
-}
 
 export default function RepositorySettingsPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const [repository, setRepository] = useState<RepositorySettings | null>(null);
+  const [repository, setRepository] = useState<RepositorySummary | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     api
-      .get<RepositorySettings>(`/repositories/${params.id}`)
+      .get<RepositorySummary>(`/repositories/${params.id}`)
       .then((data) => {
-        if (!cancelled) setRepository(data);
+        if (!controller.signal.aborted) {
+          setRepository(data);
+          setError(null);
+        }
       })
-      .catch(() => {
-        if (!cancelled && params.id.startsWith("demo-")) {
-          const sample = demoRepositories.find((item) => item.id === params.id);
-          if (sample) {
-            setRepository({ ...sample, settings: { ...sample.settings, security: true, performance: false, bestPractices: true } });
-            return;
-          }
+      .catch((cause: unknown) => {
+        if (controller.signal.aborted) {
+          return;
         }
-        if (!cancelled) {
-          setError("Repository not found");
-          router.replace("/dashboard/repositories");
-        }
+
+        setError(
+          cause instanceof Error && cause.message.includes("not found")
+            ? "That repository is not connected to your workspace."
+            : errorMessage(cause, "We couldn't load this repository."),
+        );
       });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [params.id, router]);
+    return () => controller.abort();
+  }, [params.id]);
 
   if (error) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-12">
-        <p className="text-muted-foreground">{error}</p>
+        <div
+          role="alert"
+          className="rounded-2xl border border-destructive/40 bg-destructive/5 px-6 py-10 text-center"
+        >
+          <p className="text-sm text-destructive">{error}</p>
+          <button
+            type="button"
+            onClick={() => router.replace("/dashboard/repositories")}
+            className="mt-4 text-sm font-medium underline underline-offset-4"
+          >
+            Back to repositories
+          </button>
+        </div>
       </main>
     );
   }
@@ -67,7 +62,7 @@ export default function RepositorySettingsPage() {
   if (!repository) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-12">
-        <p className="text-muted-foreground">Loading repository...</p>
+        <div className="h-48 animate-pulse rounded-2xl bg-muted" />
       </main>
     );
   }

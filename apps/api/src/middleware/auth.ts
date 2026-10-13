@@ -1,13 +1,11 @@
-import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 
 import { UnauthorizedError } from "@/errors";
+import { readSessionCookie } from "@/lib/cookies";
 import { sessionStore } from "@/lib/session";
 
-const SESSION_COOKIE = "revorbit_session";
-
 export const requireAuth = createMiddleware(async (c, next) => {
-  const sessionId = getCookie(c, SESSION_COOKIE);
+  const sessionId = readSessionCookie(c);
 
   if (!sessionId) {
     throw new UnauthorizedError("Not authenticated");
