@@ -1,6 +1,5 @@
-# Revorbit
+<img width="2800" height="560" alt="revorbit-hero-banner" src="https://github.com/user-attachments/assets/3448affd-d811-4197-a6f6-397670c4ca93" />
 
-> AI-powered GitHub Pull Request review platform
 
 Revorbit is a GitHub App that automatically reviews pull requests with AI. When a developer opens or updates a pull request, Revorbit verifies the webhook, authenticates as the installed GitHub App, retrieves the changed files, sends the relevant code to an AI model, and posts review comments back to GitHub as inline comments — including a "Commit suggestion" for each fix.
 
